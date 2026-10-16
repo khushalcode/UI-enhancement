@@ -1,0 +1,31 @@
+--- lib/features/payment/screens/qr_code_payment_screen.dart
++++ lib/features/payment/screens/qr_code_payment_screen.dart
+@@ -102,6 +102,28 @@
+                             inputAction: TextInputAction.done,
+                           ),
+                           const SizedBox(height: Dimensions.paddingSizeLarge),
++
++                          Row(children: [
++                            Expanded(child: Text(
++                              'Payment Proof',
++                              style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeDefault),
++                            )),
++                            InkWell(
++                              onTap: () async {
++                                XFile? result = await ImagePicker().pickImage(source: ImageSource.gallery);
++                                if (result != null) {
++                                  setState(() {
++                                    _qrPaymentProof = result;
++                                  });
++                                }
++                              },
++                              child: Container(
++                                padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
++                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(Dimensions.radiusSmall), border: Border.all(color: Theme.of(context).primaryColor)),
++                                child: Text(_qrPaymentProof != null ? 'Image Selected' : 'Upload Image', style: robotoMedium.copyWith(color: Theme.of(context).primaryColor)),
++                              ),
++                            ),
++                          ]),
++                          const SizedBox(height: Dimensions.paddingSizeLarge),
+                         ]),
+                       ),

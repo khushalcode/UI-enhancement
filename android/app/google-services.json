@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "796750725283",
+    "firebase_url": "https://deokart-da98d-default-rtdb.firebaseio.com",
+    "project_id": "deokart-da98d",
+    "storage_bucket": "deokart-da98d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:796750725283:android:2b16708bb343a9dd917f16",
+        "android_client_info": {
+          "package_name": "com.deokartapp.customer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "796750725283-kup73lne1j1fk73rjd66ech2dfj20j3v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAro1P3JznHMObYyFHIobLcBANMzshBlMI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "796750725283-kup73lne1j1fk73rjd66ech2dfj20j3v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
