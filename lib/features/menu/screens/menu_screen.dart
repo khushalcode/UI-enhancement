@@ -1,3 +1,5 @@
+import 'package:sixam_mart/util/blinkit_ui.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
@@ -35,106 +37,121 @@ class _MenuScreenState extends State<MenuScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).cardColor,
+      backgroundColor: BlinkitUi.surface,
       body: GetBuilder<ProfileController>(builder: (profileController) {
         final bool isLoggedIn = AuthHelper.isLoggedIn();
 
         return Column(children: [
 
           Container(
-            decoration: BoxDecoration(color: Theme.of(context).primaryColor),
-            child: Padding(
-              padding: const EdgeInsets.only(
-                left: Dimensions.paddingSizeExtremeLarge, right: Dimensions.paddingSizeExtremeLarge,
-                top: 50, bottom: Dimensions.paddingSizeExtremeLarge,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter, end: Alignment.bottomCenter,
+                colors: [BlinkitUi.accent(), BlinkitUi.surface],
               ),
-              child: Row(children: [
-
-                Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor,
-                    shape: BoxShape.circle,
-                  ),
-                  padding: const EdgeInsets.all(1),
-                  child: ClipOval(child: CustomImage(
-                    placeholder: Images.guestIconLight,
-                    image: '${(profileController.userInfoModel != null && isLoggedIn) ? profileController.userInfoModel!.imageFullUrl : ''}',
-                    height: 70, width: 70, fit: BoxFit.cover,
-                  )),
-                ),
-                const SizedBox(width: Dimensions.paddingSizeDefault),
-
-                Expanded(
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    isLoggedIn && profileController.userInfoModel == null ? Shimmer(
-                      child: Container(
-                        height: 15, width: 150,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).cardColor,
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                      ),
-                    ) : Text(
-                      isLoggedIn ? '${profileController.userInfoModel?.fName ?? ''} ${profileController.userInfoModel?.lName ?? ''}' : 'guest_user'.tr,
-                      style: robotoBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: Theme.of(context).cardColor),
-                    ),
-                    SizedBox(height: isLoggedIn && profileController.userInfoModel == null ? Dimensions.paddingSizeSmall : Dimensions.paddingSizeExtraSmall),
-
-                    isLoggedIn && profileController.userInfoModel == null ? Shimmer(
-                      child: Container(
-                        height: 15, width: 100,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).cardColor,
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                      ),
-                    ) : isLoggedIn ? Text(
-                      profileController.userInfoModel != null ? DateConverter.containTAndZToUTCFormat(profileController.userInfoModel!.createdAt!) : '',
-                      style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).cardColor),
-                    ) : InkWell(
-                      onTap: () async {
-                        if(!ResponsiveHelper.isDesktop(context)) {
-                          await Get.toNamed(RouteHelper.getSignInRoute(Get.currentRoute));
-                          if(AuthHelper.isLoggedIn()) {
-                            profileController.getUserInfo();
-                          }
-                        }else{
-                          Get.dialog(const Center(child: AuthDialogWidget(exitFromApp: true, backFromThis: true)));
-                        }
-                      },
-                      child: Text(
-                        'login_to_view_all_feature'.tr,
-                        style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).cardColor),
-                      ),
-                    ) ,
-
-                  ]),
-                ),
-
-              ]),
             ),
+            padding: EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, MediaQuery.of(context).padding.top + Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge, Dimensions.paddingSizeDefault),
+            child: Column(children: [
+
+              Align(
+                alignment: Alignment.centerRight,
+                child: InkWell(
+                  onTap: () => Get.toNamed(RouteHelper.getNotificationRoute()),
+                  child: Container(
+                    height: 46, width: 46,
+                    decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.7), shape: BoxShape.circle),
+                    child: const Icon(CupertinoIcons.bell, size: 22, color: BlinkitUi.ink),
+                  ),
+                ),
+              ),
+
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white,
+                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 16, offset: const Offset(0, 6))],
+                ),
+                padding: const EdgeInsets.all(5),
+                child: ClipOval(child: CustomImage(
+                  placeholder: Images.guestIconLight,
+                  image: '${(profileController.userInfoModel != null && isLoggedIn) ? profileController.userInfoModel!.imageFullUrl : ''}',
+                  height: 96, width: 96, fit: BoxFit.cover,
+                )),
+              ),
+              const SizedBox(height: Dimensions.paddingSizeDefault),
+
+              isLoggedIn && profileController.userInfoModel == null ? Shimmer(
+                child: Container(
+                  height: 18, width: 150,
+                  decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(5)),
+                ),
+              ) : Text(
+                isLoggedIn ? '${profileController.userInfoModel?.fName ?? ''} ${profileController.userInfoModel?.lName ?? ''}' : 'guest_user'.tr,
+                style: robotoBold.copyWith(fontSize: 26, color: BlinkitUi.ink),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+
+              isLoggedIn && profileController.userInfoModel == null ? Shimmer(
+                child: Container(
+                  height: 14, width: 100,
+                  decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(5)),
+                ),
+              ) : isLoggedIn ? Text(
+                profileController.userInfoModel?.phone ?? '',
+                style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeLarge, color: BlinkitUi.ink.withValues(alpha: 0.7)),
+                textDirection: TextDirection.ltr,
+              ) : InkWell(
+                onTap: () async {
+                  if(!ResponsiveHelper.isDesktop(context)) {
+                    await Get.toNamed(RouteHelper.getSignInRoute(Get.currentRoute));
+                    if(AuthHelper.isLoggedIn()) {
+                      profileController.getUserInfo();
+                    }
+                  }else{
+                    Get.dialog(const Center(child: AuthDialogWidget(exitFromApp: true, backFromThis: true)));
+                  }
+                },
+                child: Text(
+                  'login_to_view_all_feature'.tr,
+                  style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: BlinkitUi.ink, decoration: TextDecoration.underline),
+                ),
+              ),
+              const SizedBox(height: Dimensions.paddingSizeLarge),
+
+              /// Quick tiles - same routes as the list below
+              Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                Expanded(child: _quickTile(context, Icons.favorite_border_rounded, 'favourite'.tr, RouteHelper.getFavouriteScreen())),
+                const SizedBox(width: Dimensions.paddingSizeSmall),
+                Expanded(child: _quickTile(context, Icons.account_balance_wallet_outlined, 'my_wallet'.tr, RouteHelper.getWalletRoute(),
+                  caption: isLoggedIn ? PriceConverter.convertPrice(profileController.userInfoModel != null ? profileController.userInfoModel!.walletBalance : 0) : null)),
+                const SizedBox(width: Dimensions.paddingSizeSmall),
+                Expanded(child: _quickTile(context, Icons.headset_mic_outlined, 'help_and_support'.tr, RouteHelper.getSupportRoute())),
+              ]),
+            ]),
           ),
 
           Expanded(child: SingleChildScrollView(
             child: Ink(
-              color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
-              padding: const EdgeInsets.only(top: Dimensions.paddingSizeLarge),
+              color: BlinkitUi.surface,
+              padding: const EdgeInsets.only(top: Dimensions.paddingSizeSmall),
               child: Column(children: [
 
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Padding(
-                    padding: const EdgeInsets.only(left: Dimensions.paddingSizeDefault, right: Dimensions.paddingSizeDefault),
+                    padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeDefault, 0),
                     child: Text(
                       'general'.tr,
-                      style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).primaryColor.withValues(alpha: 0.5)),
+                      style: robotoBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: BlinkitUi.ink),
                     ),
                   ),
 
                   Container(
                     decoration: BoxDecoration(
                         color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-                      boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 5, spreadRadius: 1)],
+                        borderRadius: BorderRadius.circular(28),
+                      boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, 4))],
                     ),
                     padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeDefault),
                     margin: const EdgeInsets.all(Dimensions.paddingSizeDefault),
@@ -150,18 +167,18 @@ class _MenuScreenState extends State<MenuScreen> {
 
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Padding(
-                    padding: const EdgeInsets.only(left: Dimensions.paddingSizeDefault, right: Dimensions.paddingSizeDefault),
+                    padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeDefault, 0),
                     child: Text(
                       'promotional_activity'.tr,
-                      style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).primaryColor.withValues(alpha: 0.5)),
+                      style: robotoBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: BlinkitUi.ink),
                     ),
                   ),
 
                   Container(
                     decoration: BoxDecoration(
                       color: Theme.of(context).cardColor,
-                      borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-                      boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 5, spreadRadius: 1)],
+                      borderRadius: BorderRadius.circular(28),
+                      boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, 4))],
                     ),
                     padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeDefault),
                     margin: const EdgeInsets.all(Dimensions.paddingSizeDefault),
@@ -189,18 +206,18 @@ class _MenuScreenState extends State<MenuScreen> {
                     (Get.find<SplashController>().configModel!.toggleStoreRegistration! && !ResponsiveHelper.isDesktop(context)) ?
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Padding(
-                    padding: const EdgeInsets.only(left: Dimensions.paddingSizeDefault, right: Dimensions.paddingSizeDefault),
+                    padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeDefault, 0),
                     child: Text(
                       'earnings'.tr,
-                      style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).primaryColor.withValues(alpha: 0.5)),
+                      style: robotoBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: BlinkitUi.ink),
                     ),
                   ),
 
                   Container(
                     decoration: BoxDecoration(
                       color: Theme.of(context).cardColor,
-                      borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-                      boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 5, spreadRadius: 1)],
+                      borderRadius: BorderRadius.circular(28),
+                      boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, 4))],
                     ),
                     padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeDefault),
                     margin: const EdgeInsets.all(Dimensions.paddingSizeDefault),
@@ -226,18 +243,18 @@ class _MenuScreenState extends State<MenuScreen> {
 
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Padding(
-                    padding: const EdgeInsets.only(left: Dimensions.paddingSizeDefault, right: Dimensions.paddingSizeDefault),
+                    padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeDefault, 0),
                     child: Text(
                       'help_and_support'.tr,
-                      style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).primaryColor.withValues(alpha: 0.5)),
+                      style: robotoBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: BlinkitUi.ink),
                     ),
                   ),
 
                   Container(
                     decoration: BoxDecoration(
                       color: Theme.of(context).cardColor,
-                      borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-                      boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 5, spreadRadius: 1)],
+                      borderRadius: BorderRadius.circular(28),
+                      boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, 4))],
                     ),
                     padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeDefault),
                     margin: const EdgeInsets.all(Dimensions.paddingSizeDefault),
@@ -311,6 +328,30 @@ class _MenuScreenState extends State<MenuScreen> {
           )),
         ]);
       }),
+    );
+  }
+
+  Widget _quickTile(BuildContext context, IconData icon, String title, String route, {String? caption}) {
+    return InkWell(
+      onTap: () => Get.toNamed(route),
+      borderRadius: BorderRadius.circular(24),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeDefault, horizontal: Dimensions.paddingSizeExtraSmall),
+        decoration: BoxDecoration(
+          color: Colors.white, borderRadius: BorderRadius.circular(24),
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 12, offset: const Offset(0, 4))],
+        ),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Container(
+            height: 48, width: 48,
+            decoration: BoxDecoration(color: BlinkitUi.yellow.withValues(alpha: 0.5), borderRadius: BorderRadius.circular(16)),
+            child: Icon(icon, size: 24, color: BlinkitUi.ink),
+          ),
+          const SizedBox(height: Dimensions.paddingSizeSmall),
+          Text(title, style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: BlinkitUi.ink), textAlign: TextAlign.center, maxLines: 2, overflow: TextOverflow.ellipsis),
+          if (caption != null) Text(caption, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: BlinkitUi.ink.withValues(alpha: 0.6)), textDirection: TextDirection.ltr),
+        ]),
+      ),
     );
   }
 

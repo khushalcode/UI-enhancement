@@ -1,3 +1,4 @@
+import 'package:sixam_mart/util/blinkit_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sixam_mart/common/controllers/theme_controller.dart';
@@ -31,9 +32,9 @@ class ShopHomeScreen extends StatelessWidget {
 
       Container(
         width: MediaQuery.of(context).size.width,
-        decoration: Get.find<ThemeController>().darkTheme ? null : const BoxDecoration(
+        decoration: Get.find<ThemeController>().darkTheme ? null : BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF0037C5), Color(0xFF0037C5)],
+            colors: [BlinkitUi.accent(), BlinkitUi.accent()],
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
           ),

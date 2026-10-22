@@ -23,6 +23,7 @@ import 'package:sixam_mart/helper/responsive_helper.dart';
 import 'package:sixam_mart/helper/route_helper.dart';
 import 'package:sixam_mart/helper/taxi_helper.dart';
 import 'package:sixam_mart/util/app_constants.dart';
+import 'package:sixam_mart/util/blinkit_ui.dart';
 import 'package:sixam_mart/util/dimensions.dart';
 import 'package:sixam_mart/util/images.dart';
 import 'package:sixam_mart/common/widgets/cart_widget.dart';
@@ -216,12 +217,12 @@ class DashboardScreenState extends State<DashboardScreen> {
                                 return const SizedBox();
                               }
                               return Container(
-                                width: size.width, height: GetPlatform.isIOS ? 80 : 70,
-                                margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                                width: size.width, height: GetPlatform.isIOS ? 88 : 80,
+                                margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                                 decoration: BoxDecoration(
-                                  color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2A2C3A) : const Color(0xFF1E1B1A),
-                                  borderRadius: BorderRadius.circular(35),
-                                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.22), blurRadius: 24, spreadRadius: 0, offset: const Offset(0, 8))],
+                                  color: Theme.of(context).cardColor,
+                                  borderRadius: BorderRadius.circular(28),
+                                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.12), blurRadius: 24, spreadRadius: 0, offset: const Offset(0, 8))],
                                 ),
                                 child: Stack(children: [
 
@@ -229,14 +230,15 @@ class DashboardScreenState extends State<DashboardScreen> {
                                     heightFactor: 0.6,
                                     child: ResponsiveHelper.isDesktop(context) ? null : (widget.fromSplash && Get.find<LocationController>().showLocationSuggestion && active) ? null
                                       : (orderController.showBottomSheet && orderController.runningOrderModel != null && orderController.runningOrderModel!.orders!.isNotEmpty && _isLogin) ? const SizedBox() : Container(
-                                        width: 65, height: 65,
+                                        width: 76, height: 76,
                                         decoration: BoxDecoration(
-                                          border: Border.all(color: Theme.of(context).cardColor, width: 5),
-                                          shape: BoxShape.circle,
-                                          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 15, spreadRadius: 1, offset: const Offset(0, 4))],
+                                          color: BlinkitUi.accent(),
+                                          borderRadius: BorderRadius.circular(22),
+                                          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.18), blurRadius: 14, offset: const Offset(0, 6))],
                                         ),
+                                        padding: const EdgeInsets.all(8),
                                         child: FloatingActionButton(
-                                          backgroundColor: Theme.of(context).primaryColor,
+                                          backgroundColor: BlinkitUi.gold,
                                           shape: const CircleBorder(),
                                           onPressed: () {
                                             if(isParcel) {
@@ -251,7 +253,7 @@ class DashboardScreenState extends State<DashboardScreen> {
                                             }
                                           },
                                           elevation: 0,
-                                          child: isTaxiWithCache ? TaxiCartWidget(color: Theme.of(context).cardColor, size: 22) : isParcel ? Icon(CupertinoIcons.add, size: 34, color: Theme.of(context).cardColor) : CartWidget(color: Theme.of(context).cardColor, size: 25),
+                                          child: isTaxiWithCache ? TaxiCartWidget(color: BlinkitUi.ink, size: 22) : isParcel ? Icon(CupertinoIcons.add, size: 34, color: BlinkitUi.ink) : CartWidget(color: BlinkitUi.ink, size: 26),
                                         ),
                                     ),
                                   ),

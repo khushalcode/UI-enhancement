@@ -4,6 +4,7 @@ import 'package:sixam_mart/common/widgets/custom_button.dart';
 import 'package:sixam_mart/common/widgets/custom_ink_well.dart';
 import 'package:sixam_mart/common/widgets/custom_text_field.dart';
 import 'package:sixam_mart/features/auth/controllers/auth_controller.dart';
+import 'package:sixam_mart/features/auth/widgets/auth_ui_kit.dart';
 import 'package:sixam_mart/features/auth/widgets/condition_check_box_widget.dart';
 import 'package:sixam_mart/features/auth/widgets/sign_up_widget.dart';
 import 'package:sixam_mart/features/auth/widgets/social_login_widget.dart';
@@ -169,7 +170,7 @@ class ManualLoginWidget extends StatelessWidget {
               Expanded(child: Container(height: 1, color: Theme.of(context).disabledColor.withValues(alpha: 0.5))),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
-                child: Text('or', style: robotoMedium.copyWith(color: Theme.of(context).disabledColor, fontStyle: FontStyle.italic)),
+                child: Text('or', style: robotoMedium.copyWith(color: Theme.of(context).disabledColor, fontStyle: FontStyle.normal)),
               ),
               Expanded(child: Container(height: 1, color: Theme.of(context).disabledColor.withValues(alpha: 0.5))),
             ]),
@@ -178,17 +179,18 @@ class ManualLoginWidget extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
             decoration: BoxDecoration(
-              border: Border.all(color: Theme.of(context).primaryColor, width: 2),
-              borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+              color: AuthColors.yellowSoft.withValues(alpha: 0.5),
+              border: Border.all(color: AuthColors.yellow, width: 1.5),
+              borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
             ),
             child: Column(
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('SIGN IN WITH OTP', style: robotoBold.copyWith(color: Theme.of(context).primaryColor, fontSize: 16)),
+                    Text('Sign in with OTP', style: robotoBold.copyWith(color: AuthColors.ink, fontSize: 16)),
                     const SizedBox(width: Dimensions.paddingSizeSmall),
-                    Icon(Icons.chat_outlined, color: Theme.of(context).primaryColor),
+                    Icon(Icons.sms_outlined, color: AuthColors.ink),
                   ],
                 ),
                 const SizedBox(height: Dimensions.paddingSizeLarge),
@@ -209,7 +211,7 @@ class ManualLoginWidget extends StatelessWidget {
                             controller: phoneController,
                             keyboardType: TextInputType.phone,
                             decoration: InputDecoration(
-                              hintText: '[ENTER MOBILE NO.]',
+                              hintText: 'Mobile number',
                               hintStyle: robotoRegular.copyWith(color: Theme.of(context).disabledColor),
                               border: InputBorder.none,
                             ),
@@ -223,7 +225,7 @@ class ManualLoginWidget extends StatelessWidget {
                       child: CustomButton(
                         height: 50,
                         width: 100,
-                        buttonText: 'REQUEST OTP',
+                        buttonText: 'Get OTP',
                         fontSize: 12,
                         radius: Dimensions.radiusDefault,
                         onPressed: () {

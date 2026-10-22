@@ -32,6 +32,9 @@ import 'package:sixam_mart/helper/responsive_helper.dart';
 import 'package:sixam_mart/helper/route_helper.dart';
 import 'package:sixam_mart/util/app_constants.dart';
 import 'package:sixam_mart/util/dimensions.dart';
+import 'package:sixam_mart/util/blinkit_ui.dart';
+import 'package:sixam_mart/helper/price_converter.dart';
+import 'package:sixam_mart/common/widgets/custom_image.dart';
 import 'package:sixam_mart/util/images.dart';
 import 'package:sixam_mart/util/styles.dart';
 import 'package:sixam_mart/common/widgets/voice_search_widget.dart';
@@ -264,175 +267,218 @@ class _HomeScreenState extends State<HomeScreen> {
                 physics: const AlwaysScrollableScrollPhysics(),
                 slivers: [
 
-                  /// App Bar
+                  /// Status bar strip (keeps the accent colour behind the system bar)
                   SliverAppBar(
-                    floating: true, pinned: true, elevation: 0,
-                    surfaceTintColor: Colors.transparent, backgroundColor: Theme.of(context).primaryColor,
-                    expandedHeight: 120,
-                    flexibleSpace: Container(
-                      padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Color(0xFF0037C5), Color(0xFFFC3202)],
-                          begin: Alignment.centerLeft, end: Alignment.centerRight,
-                        ),
-                      ),
-                      child: Center(child: Container(
-                        width: Dimensions.webMaxWidth, height: 60,
-                        padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
-                        child: Row(children: [
-                          (splashController.module != null && splashController.configModel!.module == null && splashController.moduleList != null && splashController.moduleList!.length != 1) ? InkWell(
+                    pinned: true, elevation: 0, toolbarHeight: 0, automaticallyImplyLeading: false,
+                    surfaceTintColor: Colors.transparent, backgroundColor: BlinkitUi.accent(),
+                    actions: const [SizedBox()],
+                  ),
+
+                  /// Header: brand, delivery time, address, wallet and profile
+                  SliverToBoxAdapter(
+                    child: Container(
+                      color: BlinkitUi.accent(),
+                      padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeDefault, Dimensions.paddingSizeDefault),
+                      child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+
+                        (splashController.module != null && splashController.configModel!.module == null && splashController.moduleList != null && splashController.moduleList!.length != 1) ? Padding(
+                          padding: const EdgeInsets.only(right: Dimensions.paddingSizeSmall),
+                          child: InkWell(
                             onTap: () {
                               splashController.removeModule();
                               Get.find<StoreController>().resetStoreData();
                             },
-                            child: (isFood || isGrocery || isShop) ? Container(
-                              padding: const EdgeInsets.all(5),
+                            child: Container(
+                              padding: const EdgeInsets.all(6),
                               decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
-                              child: const Icon(Icons.arrow_back, color: Colors.black, size: 20),
-                            ) : Image.asset(Images.moduleIcon, height: 25, width: 25, color: Colors.white),
-                          ) : const SizedBox(),
-                          SizedBox(width: (splashController.module != null && splashController.configModel!.module == null && splashController.moduleList != null && splashController.moduleList!.length != 1) ? Dimensions.paddingSizeSmall : 0),
-
-                          /// Location Section
-                          Expanded(child: InkWell(
-                            onTap: () => Get.find<LocationController>().navigateToLocationScreen('home'),
-                            child: GetBuilder<LocationController>(builder: (locationController) {
-                              return Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
-                                Row(children: [
-                                  if (!(isFood || isGrocery || isShop)) const Icon(Icons.location_on, color: Colors.white, size: 18),
-                                  if (!(isFood || isGrocery || isShop)) const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-                                  Text(
-                                    (isFood || isGrocery || isShop) ? '20 minutes' : (AuthHelper.isLoggedIn() ? AddressHelper.getUserAddressFromSharedPref()!.addressType!.tr : 'your_location'.tr),
-                                    style: robotoBold.copyWith(color: Colors.white, fontSize: (isFood || isGrocery || isShop) ? 22 : Dimensions.fontSizeDefault),
-                                    maxLines: 1, overflow: TextOverflow.ellipsis,
-                                  ),
-                                ]),
-                                Row(children: [
-                                  if (isFood || isGrocery || isShop) Text('OTHERS ', style: robotoBold.copyWith(color: Colors.white.withValues(alpha: 0.9), fontSize: Dimensions.fontSizeExtraSmall)),
-                                  if (isFood || isGrocery || isShop) Icon(Icons.keyboard_arrow_down, color: Colors.white.withValues(alpha: 0.9), size: 12),
-                                  if (isFood || isGrocery || isShop) const SizedBox(width: 4),
-                                  Flexible(child: Text(
-                                    AddressHelper.getUserAddressFromSharedPref()!.address!,
-                                    style: robotoRegular.copyWith(color: Colors.white.withValues(alpha: 0.9), fontSize: Dimensions.fontSizeExtraSmall),
-                                    maxLines: 1, overflow: TextOverflow.ellipsis,
-                                  )),
-                                  if (!(isFood || isGrocery || isShop)) Icon(Icons.keyboard_arrow_down, color: Colors.white.withValues(alpha: 0.9), size: 14),
-                                ]),
-                              ]);
-                            }),
-                          )),
-
-                        /// Icon Bar
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).cardColor,
-                            borderRadius: BorderRadius.circular(30),
-                            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 15, offset: const Offset(0, 5))],
+                              child: const Icon(Icons.arrow_back, color: Colors.black, size: 18),
+                            ),
                           ),
-                          child: Row(children: [
+                        ) : const SizedBox(),
 
-                            /// Wallet
-                            InkWell(
-                              onTap: () {
-                                if(AuthHelper.isLoggedIn()){
-                                  Get.toNamed(RouteHelper.getWalletRoute());
-                                }else {
-                                  Get.toNamed(RouteHelper.getSignInRoute(RouteHelper.main));
-                                }
-                              },
-                              child: Image.asset(Images.walletIcon, height: 20, width: 20, color: Theme.of(context).textTheme.bodyLarge!.color),
-                            ),
-                            const SizedBox(width: Dimensions.paddingSizeSmall),
+                        /// Location section
+                        Expanded(child: InkWell(
+                          onTap: () => Get.find<LocationController>().navigateToLocationScreen('home'),
+                          child: GetBuilder<LocationController>(builder: (locationController) {
+                            final Color textColor = BlinkitUi.onAccent();
+                            return Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
+                              Text(AppConstants.appName, style: robotoBold.copyWith(color: textColor, fontSize: Dimensions.fontSizeLarge), maxLines: 1, overflow: TextOverflow.ellipsis),
+                              Text(
+                                (isFood || isGrocery || isShop) ? '20 minutes' : (AuthHelper.isLoggedIn() ? AddressHelper.getUserAddressFromSharedPref()!.addressType!.tr : 'your_location'.tr),
+                                style: robotoBold.copyWith(color: textColor, fontSize: 32, height: 1.15),
+                                maxLines: 1, overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 2),
+                              Row(children: [
+                                Flexible(child: Text(
+                                  AddressHelper.getUserAddressFromSharedPref()!.address!,
+                                  style: robotoMedium.copyWith(color: textColor, fontSize: Dimensions.fontSizeDefault),
+                                  maxLines: 1, overflow: TextOverflow.ellipsis,
+                                )),
+                                Icon(Icons.keyboard_arrow_down_rounded, color: textColor, size: 22),
+                              ]),
+                            ]);
+                          }),
+                        )),
+                        const SizedBox(width: Dimensions.paddingSizeSmall),
 
-                            /// Notification
-                            InkWell(
-                              onTap: () => Get.toNamed(RouteHelper.getNotificationRoute()),
-                              child: GetBuilder<NotificationController>(builder: (notificationController) {
-                                return Stack(clipBehavior: Clip.none, children: [
-                                  Icon(CupertinoIcons.bell, size: 20, color: Theme.of(context).textTheme.bodyLarge!.color),
-                                  notificationController.hasNotification ? Positioned(top: -2, right: -2, child: Container(
-                                    height: 8, width: 8, decoration: BoxDecoration(
-                                    color: Theme.of(context).primaryColor, shape: BoxShape.circle,
-                                    border: Border.all(width: 1, color: Theme.of(context).cardColor),
+                        /// Wallet
+                        InkWell(
+                          onTap: () {
+                            if(AuthHelper.isLoggedIn()){
+                              Get.toNamed(RouteHelper.getWalletRoute());
+                            }else {
+                              Get.toNamed(RouteHelper.getSignInRoute(RouteHelper.main));
+                            }
+                          },
+                          child: GetBuilder<ProfileController>(builder: (profileController) {
+                            final bool showBalance = AuthHelper.isLoggedIn() && profileController.userInfoModel != null;
+                            return SizedBox(
+                              width: 58, height: 64,
+                              child: Stack(alignment: Alignment.topCenter, children: [
+                                Container(
+                                  width: 52, height: 52,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white, shape: BoxShape.circle,
+                                    boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 10, offset: const Offset(0, 4))],
                                   ),
-                                  )) : const SizedBox(),
-                                ]);
-                              }),
-                            ),
-                            const SizedBox(width: Dimensions.paddingSizeSmall),
+                                  child: Center(child: Image.asset(Images.walletIcon, height: 24, width: 24, color: BlinkitUi.ink)),
+                                ),
+                                if (showBalance) Positioned(
+                                  bottom: 0,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
+                                    child: Text(
+                                      PriceConverter.convertPrice(profileController.userInfoModel!.walletBalance),
+                                      style: robotoBold.copyWith(color: BlinkitUi.ink, fontSize: 11),
+                                      maxLines: 1, textDirection: TextDirection.ltr,
+                                    ),
+                                  ),
+                                ),
+                              ]),
+                            );
+                          }),
+                        ),
+                        const SizedBox(width: Dimensions.paddingSizeSmall),
 
-                            /// Cart
-                            InkWell(
-                              onTap: () => Get.toNamed(RouteHelper.getCartRoute()),
-                              child: CartWidget(color: Theme.of(context).textTheme.bodyLarge!.color, size: 20),
-                            ),
-                            const SizedBox(width: Dimensions.paddingSizeSmall),
-
-                            /// Profile
-                            InkWell(
-                              onTap: () {
-                                if(AuthHelper.isLoggedIn()){
-                                  Get.toNamed(RouteHelper.getProfileRoute());
-                                }else {
-                                  Get.toNamed(RouteHelper.getSignInRoute(RouteHelper.main));
-                                }
-                              },
-                              child: const Icon(CupertinoIcons.person, size: 20, color: Color(
-                                  0xFFFC3202)),
-                            ),
-
-                          ]),
+                        /// Profile
+                        InkWell(
+                          onTap: () {
+                            if(AuthHelper.isLoggedIn()){
+                              Get.toNamed(RouteHelper.getProfileRoute());
+                            }else {
+                              Get.toNamed(RouteHelper.getSignInRoute(RouteHelper.main));
+                            }
+                          },
+                          child: GetBuilder<ProfileController>(builder: (profileController) {
+                            String initials = '';
+                            if (AuthHelper.isLoggedIn() && profileController.userInfoModel != null) {
+                              final String f = profileController.userInfoModel!.fName ?? '';
+                              final String l = profileController.userInfoModel!.lName ?? '';
+                              initials = '${f.isNotEmpty ? f[0] : ''}${l.isNotEmpty ? l[0] : ''}'.toUpperCase();
+                            }
+                            return Container(
+                              width: 52, height: 52,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: const LinearGradient(colors: [Color(0xFFFFE08A), Color(0xFFFFB92E)], begin: Alignment.topLeft, end: Alignment.bottomRight),
+                                border: Border.all(color: Colors.white, width: 3),
+                                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.12), blurRadius: 10, offset: const Offset(0, 4))],
+                              ),
+                              child: Center(child: initials.isEmpty
+                                ? const Icon(CupertinoIcons.person_fill, size: 24, color: BlinkitUi.ink)
+                                : Text(initials, style: robotoBold.copyWith(color: BlinkitUi.ink, fontSize: Dimensions.fontSizeLarge))),
+                            );
+                          }),
                         ),
                       ]),
-                    ))),
-                    actions: const [SizedBox()],
+                    ),
                   ),
 
+                  /// Search bar (pinned)
                   !showMobileModule && !isTaxi ? SliverPersistentHeader(
                     pinned: true,
                     delegate: HomeSliverDelegate(
-                      height: 65,
+                      height: 72,
                       callback: (val){},
-                      child: Center(child: Container(
-                      height: 65, width: Dimensions.webMaxWidth,
-                      decoration: BoxDecoration(
-                        color: (isFood || isGrocery || isShop) ? null : Theme.of(context).colorScheme.surface,
-                        gradient: (isFood || isGrocery || isShop) ? const LinearGradient(
-                          colors: [Color(0xFF0037C5), Color(0xFFFC3202)],
-                          begin: Alignment.centerLeft, end: Alignment.centerRight,
-                        ) : null,
-                        boxShadow: (isFood || isGrocery || isShop) ? null : [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 5))],
-                      ),
-                      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault),
-                      child: isTaxi? Container(color: Theme.of(context).primaryColor): Row(children: [
-                        Expanded(child: InkWell(
+                      child: Container(
+                        height: 72, width: double.infinity,
+                        color: BlinkitUi.accent(),
+                        padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeDefault, 4, Dimensions.paddingSizeDefault, Dimensions.paddingSizeSmall),
+                        child: InkWell(
                           onTap: () => Get.toNamed(RouteHelper.getSearchRoute(queryText: '')),
                           child: Container(
-                            height: 48,
                             padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault),
                             decoration: BoxDecoration(
                               color: Theme.of(context).cardColor,
-                              borderRadius: BorderRadius.circular(50),
-                              boxShadow: (isFood || isGrocery || isShop) ? [] : [BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 15, offset: const Offset(0, 5))],
+                              borderRadius: BorderRadius.circular(30),
+                              border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
                             ),
                             child: Row(children: [
-                              Icon(CupertinoIcons.search, size: 22, color: Theme.of(context).primaryColor),
-                              const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                              const Icon(CupertinoIcons.search, size: 24, color: BlinkitUi.ink),
+                              const SizedBox(width: Dimensions.paddingSizeSmall),
                               Expanded(child: (isFood || isGrocery || isShop) ? const AnimatedSearchText() : Text(
                                 Get.find<SplashController>().configModel!.moduleConfig!.module!.showRestaurantText! ? 'search_food_or_restaurant'.tr : 'search_item_or_store'.tr,
-                                style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).hintColor),
+                                style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).hintColor),
+                                maxLines: 1, overflow: TextOverflow.ellipsis,
                               )),
+                              Container(height: 24, width: 1, color: Theme.of(context).disabledColor.withValues(alpha: 0.4)),
+                              const SizedBox(width: Dimensions.paddingSizeSmall),
                               InkWell(
                                 onTap: () => _openVoiceSearch(),
-                                child: Icon(CupertinoIcons.mic_fill, size: 22, color: Theme.of(context).primaryColor),
+                                child: const Padding(padding: EdgeInsets.all(4), child: Icon(CupertinoIcons.mic_fill, size: 24, color: BlinkitUi.ink)),
                               ),
                             ]),
                           ),
-                        )),
-                      ]),
-                    ))),
+                        ),
+                      ),
+                    ),
+                  ) : const SliverToBoxAdapter(),
+
+                  /// Module tabs (pinned) - same switchModule call the module grid uses
+                  (!showMobileModule && !isTaxi && splashController.configModel!.module == null && splashController.moduleList != null && splashController.moduleList!.length > 1) ? SliverPersistentHeader(
+                    pinned: true,
+                    delegate: HomeSliverDelegate(
+                      height: 82,
+                      callback: (val){},
+                      child: Container(
+                        height: 82, width: double.infinity,
+                        color: BlinkitUi.accent(),
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
+                          itemCount: splashController.moduleList!.length,
+                          itemBuilder: (context, index) {
+                            final module = splashController.moduleList![index];
+                            final bool selected = splashController.module != null && splashController.module!.id == module.id;
+                            final Color tabColor = BlinkitUi.onAccent();
+                            return InkWell(
+                              onTap: selected ? null : () => splashController.switchModule(index, true),
+                              child: Container(
+                                constraints: const BoxConstraints(minWidth: 76),
+                                padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
+                                child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
+                                  CustomImage(image: '${module.iconFullUrl}', height: 34, width: 34, fit: BoxFit.contain),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    module.moduleName ?? '',
+                                    style: (selected ? robotoBold : robotoMedium).copyWith(color: selected ? tabColor : tabColor.withValues(alpha: 0.75), fontSize: Dimensions.fontSizeDefault),
+                                    maxLines: 1, overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  AnimatedContainer(
+                                    duration: const Duration(milliseconds: 200),
+                                    height: 3, width: selected ? 36 : 0,
+                                    decoration: BoxDecoration(color: tabColor, borderRadius: BorderRadius.circular(2)),
+                                  ),
+                                ]),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
                   ) : const SliverToBoxAdapter(),
 
                   SliverToBoxAdapter(

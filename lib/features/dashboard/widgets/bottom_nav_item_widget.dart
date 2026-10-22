@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sixam_mart/util/blinkit_ui.dart';
 import 'package:sixam_mart/util/dimensions.dart';
 import 'package:sixam_mart/util/styles.dart';
 
@@ -9,12 +10,14 @@ class BottomNavItemWidget extends StatelessWidget {
   final String title;
   final Function? onTap;
   final bool isSelected;
-  const BottomNavItemWidget({super.key, this.onTap, this.isSelected = false, required this.title, this.selectedIcon, this.unSelectedIcon, this.iconData});
+  final Color? accentColor;
+  const BottomNavItemWidget({super.key, this.onTap, this.isSelected = false, required this.title, this.selectedIcon, this.unSelectedIcon, this.iconData, this.accentColor});
 
   @override
   Widget build(BuildContext context) {
-    final Color activeColor = Colors.white;
-    final Color inactiveColor = Colors.white.withValues(alpha: 0.55);
+    final Color inactiveColor = BlinkitUi.ink.withValues(alpha: 0.6);
+    final Color accent = accentColor ?? BlinkitUi.accent();
+    final Color iconColor = isSelected ? (accent == BlinkitUi.red ? Colors.white : BlinkitUi.ink) : inactiveColor;
 
     return Expanded(
       child: InkWell(
@@ -25,17 +28,15 @@ class BottomNavItemWidget extends StatelessWidget {
           AnimatedContainer(
             duration: const Duration(milliseconds: 220),
             curve: Curves.easeOut,
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+            height: 46, width: 46,
+            alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: isSelected ? Theme.of(context).primaryColor : Colors.transparent,
-              borderRadius: BorderRadius.circular(20),
+              color: isSelected ? accent : Colors.transparent,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: isSelected ? BlinkitUi.ink : Colors.transparent, width: 2.4),
             ),
-            child: iconData != null ? Icon(
-              iconData, size: 22,
-              color: isSelected ? activeColor : inactiveColor,
-            ) : Image.asset(
-              isSelected ? selectedIcon! : unSelectedIcon!, height: 22, width: 22,
-              color: isSelected ? activeColor : inactiveColor,
+            child: iconData != null ? Icon(iconData, size: 24, color: iconColor) : Image.asset(
+              isSelected ? selectedIcon! : unSelectedIcon!, height: 24, width: 24, color: iconColor,
             ),
           ),
 
@@ -44,8 +45,8 @@ class BottomNavItemWidget extends StatelessWidget {
           Text(
             title,
             style: robotoRegular.copyWith(
-              color: isSelected ? activeColor : inactiveColor,
-              fontSize: 11,
+              color: isSelected ? BlinkitUi.ink : inactiveColor,
+              fontSize: 12,
               fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
             ),
           ),
