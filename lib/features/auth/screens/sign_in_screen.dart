@@ -46,7 +46,7 @@ class SignInScreenState extends State<SignInScreen> {
               behavior: SnackBarBehavior.floating,
               backgroundColor: Colors.green,
               duration: const Duration(seconds: 2),
-              margin: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+              margin: EdgeInsets.all(Dimensions.paddingSizeSmall),
             ));
             _canExit = true;
             Timer(const Duration(seconds: 2), () {
