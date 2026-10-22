@@ -1,3 +1,4 @@
+import 'package:sixam_mart/util/dimensions.dart';
 import 'package:flutter/gestures.dart';
 import 'package:sixam_mart/features/splash/controllers/splash_controller.dart';
 import 'package:sixam_mart/helper/route_helper.dart';

@@ -1,3 +1,4 @@
+import 'package:sixam_mart/util/dimensions.dart';
 import 'dart:async';
 import 'dart:io';
 import 'package:sixam_mart/features/auth/controllers/auth_controller.dart';
