@@ -47,6 +47,7 @@ import 'package:sixam_mart/common/widgets/cart_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sixam_mart/features/home/widgets/module_view.dart';
+import 'package:sixam_mart/features/home/widgets/unified_home_feed.dart';
 import 'package:sixam_mart/features/parcel/screens/parcel_category_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -93,6 +94,21 @@ class HomeScreen extends StatefulWidget {
     if(Get.find<SplashController>().module == null && Get.find<SplashController>().configModel!.module == null) {
       Get.find<BannerController>().getFeaturedBanner();
       Get.find<StoreController>().getFeaturedStoreList();
+      // Load cross-module data so the UnifiedHomeFeed has content to show
+      // before the user picks a specific module.
+      Get.find<CategoryController>().getCategoryList(false);
+      Get.find<BannerController>().getPromotionalBannerList(false);
+      Get.find<ItemController>().getDiscountedItemList(offset: '1', firstTimeCategoryLoad: true);
+      Get.find<ItemController>().getPopularItemList(offset: '1', firstTimeCategoryLoad: true);
+      Get.find<ItemController>().getReviewedItemList(offset: '1', firstTimeCategoryLoad: true);
+      Get.find<ItemController>().getRecommendedItemList(false, 'all', false);
+      Get.find<StoreController>().getPopularStoreList(false, 'all', false);
+      Get.find<StoreController>().getLatestStoreList(false, 'all', false);
+      Get.find<StoreController>().getTopOfferStoreList(false, false);
+      Get.find<StoreController>().getStoreList(1, false);
+      Get.find<CampaignController>().getBasicCampaignList(false);
+      Get.find<CampaignController>().getItemCampaignList(false);
+      Get.find<AdvertisementController>().getAdvertisementList();
       if(AuthHelper.isLoggedIn()) {
         Get.find<AddressController>().getAddressList();
       }
@@ -257,6 +273,20 @@ class _HomeScreenState extends State<HomeScreen> {
                     await Get.find<AddressController>().getAddressList();
                   }
                   await Get.find<StoreController>().getFeaturedStoreList();
+                  // Refresh cross-module data for the UnifiedHomeFeed
+                  await Get.find<CategoryController>().getCategoryList(true);
+                  await Get.find<BannerController>().getPromotionalBannerList(true);
+                  await Get.find<ItemController>().getDiscountedItemList(offset: '1');
+                  await Get.find<ItemController>().getPopularItemList(offset: '1');
+                  await Get.find<ItemController>().getReviewedItemList(offset: '1');
+                  await Get.find<ItemController>().getRecommendedItemList(true, 'all', false);
+                  await Get.find<StoreController>().getPopularStoreList(true, 'all', false);
+                  await Get.find<StoreController>().getLatestStoreList(true, 'all', false);
+                  await Get.find<StoreController>().getTopOfferStoreList(true, false);
+                  await Get.find<StoreController>().getStoreList(1, true);
+                  Get.find<CampaignController>().getBasicCampaignList(true);
+                  await Get.find<CampaignController>().getItemCampaignList(true);
+                  Get.find<AdvertisementController>().getAdvertisementList();
                 }
                 splashController.setRefreshing(false);
               },
@@ -406,8 +436,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
 
-                  /// Search bar (pinned)
-                  !showMobileModule && !isTaxi ? SliverPersistentHeader(
+                  /// Search bar (pinned) — now shows in both states so the
+                  /// unified home feed (no module selected) also has search.
+                  !isTaxi ? SliverPersistentHeader(
                     pinned: true,
                     delegate: HomeSliverDelegate(
                       height: 72,
@@ -429,7 +460,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               const Icon(CupertinoIcons.search, size: 24, color: BlinkitUi.ink),
                               const SizedBox(width: Dimensions.paddingSizeSmall),
                               Expanded(child: (isFood || isGrocery || isShop) ? const AnimatedSearchText() : Text(
-                                Get.find<SplashController>().configModel!.moduleConfig!.module!.showRestaurantText! ? 'search_food_or_restaurant'.tr : 'search_item_or_store'.tr,
+                                (Get.find<SplashController>().configModel!.moduleConfig != null && Get.find<SplashController>().configModel!.moduleConfig!.module != null && Get.find<SplashController>().configModel!.moduleConfig!.module!.showRestaurantText!) ? 'search_food_or_restaurant'.tr : 'search_item_or_store'.tr,
                                 style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).hintColor),
                                 maxLines: 1, overflow: TextOverflow.ellipsis,
                               )),
@@ -446,43 +477,51 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ) : const SliverToBoxAdapter(),
 
-                  /// Module tabs (pinned) - same switchModule call the module grid uses
-                  (!showMobileModule && !isTaxi && splashController.configModel!.module == null && splashController.moduleList != null && splashController.moduleList!.length > 1) ? SliverPersistentHeader(
+                  /// Inline module chip bar (pinned) — matches the Blinksy-style
+                  /// horizontal scrollable category tabs. Shows in both states:
+                  /// when no module is selected yet AND when one is selected.
+                  (!isTaxi && splashController.configModel!.module == null && splashController.moduleList != null && splashController.moduleList!.length > 1) ? SliverPersistentHeader(
                     pinned: true,
                     delegate: HomeSliverDelegate(
-                      height: 82,
+                      height: 64,
                       callback: (val){},
                       child: Container(
-                        height: 82, width: double.infinity,
+                        height: 64, width: double.infinity,
                         color: BlinkitUi.accent(),
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
-                          padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
+                          padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: 10),
                           itemCount: splashController.moduleList!.length,
                           itemBuilder: (context, index) {
                             final module = splashController.moduleList![index];
                             final bool selected = splashController.module != null && splashController.module!.id == module.id;
                             final Color tabColor = BlinkitUi.onAccent();
-                            return InkWell(
-                              onTap: selected ? null : () => splashController.switchModule(index, true),
-                              child: Container(
-                                constraints: const BoxConstraints(minWidth: 76),
-                                padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
-                                child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
-                                  CustomImage(image: '${module.iconFullUrl}', height: 34, width: 34, fit: BoxFit.contain),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    module.moduleName ?? '',
-                                    style: (selected ? robotoBold : robotoMedium).copyWith(color: selected ? tabColor : tabColor.withValues(alpha: 0.75), fontSize: Dimensions.fontSizeDefault),
-                                    maxLines: 1, overflow: TextOverflow.ellipsis,
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 8),
+                              child: InkWell(
+                                onTap: selected ? null : () => splashController.switchModule(index, true),
+                                borderRadius: BorderRadius.circular(22),
+                                child: AnimatedContainer(
+                                  duration: const Duration(milliseconds: 200),
+                                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: selected ? Colors.white : Colors.white.withValues(alpha: 0.22),
+                                    borderRadius: BorderRadius.circular(22),
+                                    border: Border.all(color: Colors.white.withValues(alpha: selected ? 0.0 : 0.35), width: 1),
                                   ),
-                                  const SizedBox(height: 4),
-                                  AnimatedContainer(
-                                    duration: const Duration(milliseconds: 200),
-                                    height: 3, width: selected ? 36 : 0,
-                                    decoration: BoxDecoration(color: tabColor, borderRadius: BorderRadius.circular(2)),
-                                  ),
-                                ]),
+                                  child: Row(mainAxisSize: MainAxisSize.min, children: [
+                                    CustomImage(image: '${module.iconFullUrl}', height: 22, width: 22, fit: BoxFit.contain),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      module.moduleName ?? '',
+                                      style: (selected ? robotoBold : robotoMedium).copyWith(
+                                        color: selected ? BlinkitUi.ink : tabColor,
+                                        fontSize: Dimensions.fontSizeSmall,
+                                      ),
+                                      maxLines: 1, overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ]),
+                                ),
                               ),
                             );
                           },
@@ -503,7 +542,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             : isTaxi ? const TaxiHomeScreen()
                             : const SizedBox(),
 
-                      ]) : ModuleView(splashController: splashController),
+                      ]) : const UnifiedHomeFeed(),
                     )),
                   ),
 
