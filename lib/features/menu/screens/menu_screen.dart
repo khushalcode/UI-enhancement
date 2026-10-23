@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
+import 'package:sixam_mart/common/controllers/theme_controller.dart';
 import 'package:sixam_mart/features/auth/widgets/auth_dialog_widget.dart';
 import 'package:sixam_mart/features/cart/controllers/cart_controller.dart';
 import 'package:sixam_mart/features/home/controllers/home_controller.dart';
@@ -24,6 +25,7 @@ import 'package:sixam_mart/util/styles.dart';
 import 'package:sixam_mart/common/widgets/confirmation_dialog.dart';
 import 'package:sixam_mart/common/widgets/custom_image.dart';
 import 'package:sixam_mart/features/menu/widgets/portion_widget.dart';
+import 'package:sixam_mart/features/profile/widgets/notification_status_change_bottom_sheet.dart';
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({super.key});
@@ -43,6 +45,7 @@ class _MenuScreenState extends State<MenuScreen> {
 
         return Column(children: [
 
+          // ===== Yellow gradient header with avatar, name, phone, and quick tiles =====
           Container(
             width: double.infinity,
             decoration: BoxDecoration(
@@ -54,6 +57,7 @@ class _MenuScreenState extends State<MenuScreen> {
             padding: EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, MediaQuery.of(context).padding.top + Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge, Dimensions.paddingSizeDefault),
             child: Column(children: [
 
+              // Top row: notification bell (right)
               Align(
                 alignment: Alignment.centerRight,
                 child: InkWell(
@@ -66,6 +70,7 @@ class _MenuScreenState extends State<MenuScreen> {
                 ),
               ),
 
+              // Avatar
               Container(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
@@ -81,6 +86,7 @@ class _MenuScreenState extends State<MenuScreen> {
               ),
               const SizedBox(height: Dimensions.paddingSizeDefault),
 
+              // Name
               isLoggedIn && profileController.userInfoModel == null ? Shimmer(
                 child: Container(
                   height: 18, width: 150,
@@ -93,6 +99,7 @@ class _MenuScreenState extends State<MenuScreen> {
               ),
               const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
+              // Phone or login link
               isLoggedIn && profileController.userInfoModel == null ? Shimmer(
                 child: Container(
                   height: 14, width: 100,
@@ -120,8 +127,10 @@ class _MenuScreenState extends State<MenuScreen> {
               ),
               const SizedBox(height: Dimensions.paddingSizeLarge),
 
-              /// Quick tiles - same routes as the list below
+              // Quick tiles: Orders, Favourite, Wallet, Support
               Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                Expanded(child: _quickTile(context, CupertinoIcons.bag_fill, 'orders'.tr, RouteHelper.getOrderRoute())),
+                const SizedBox(width: Dimensions.paddingSizeSmall),
                 Expanded(child: _quickTile(context, Icons.favorite_border_rounded, 'favourite'.tr, RouteHelper.getFavouriteScreen())),
                 const SizedBox(width: Dimensions.paddingSizeSmall),
                 Expanded(child: _quickTile(context, Icons.account_balance_wallet_outlined, 'my_wallet'.tr, RouteHelper.getWalletRoute(),
@@ -132,157 +141,134 @@ class _MenuScreenState extends State<MenuScreen> {
             ]),
           ),
 
+          // ===== Scrollable body with all menu sections =====
           Expanded(child: SingleChildScrollView(
             child: Ink(
               color: BlinkitUi.surface,
               padding: const EdgeInsets.only(top: Dimensions.paddingSizeSmall),
               child: Column(children: [
 
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeDefault, 0),
-                    child: Text(
-                      'general'.tr,
-                      style: robotoBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: BlinkitUi.ink),
-                    ),
+                // --- Account section ---
+                _sectionTitle(context, 'my_account'.tr),
+                _sectionCard(context, children: [
+                  PortionWidget(icon: Images.profileIcon, title: 'profile'.tr, route: RouteHelper.getProfileRoute()),
+                  PortionWidget(icon: Images.addressIcon, title: 'my_address'.tr, route: RouteHelper.getAddressRoute()),
+                  PortionWidget(icon: Images.orderSelect, title: 'my_orders'.tr, route: RouteHelper.getOrderRoute(),
+                    hideDivider: Get.find<SplashController>().configModel!.loyaltyPointStatus == 1 ? false : true,
                   ),
-
-                  Container(
-                    decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(28),
-                      boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, 4))],
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeDefault),
-                    margin: const EdgeInsets.all(Dimensions.paddingSizeDefault),
-                    child: Column(children: [
-                      PortionWidget(icon: Images.profileIcon, title: 'profile'.tr, route: RouteHelper.getProfileRoute()),
-                      PortionWidget(icon: Images.addressIcon, title: 'my_address'.tr, route: RouteHelper.getAddressRoute()),
-                      PortionWidget(icon: Images.favouriteUnselect, title: 'favourite'.tr, route: RouteHelper.getFavouriteScreen()),
-                      PortionWidget(icon: Images.languageIcon, title: 'language'.tr, hideDivider: true, onTap: ()=> _manageLanguageFunctionality(), route: ''),
-                    ]),
-                  )
-
+                  (Get.find<SplashController>().configModel!.loyaltyPointStatus == 1) ? PortionWidget(
+                      icon: Images.pointIcon, title: 'loyalty_points'.tr, route: RouteHelper.getLoyaltyRoute(),
+                    hideDivider: Get.find<SplashController>().configModel!.customerWalletStatus == 1 ? false : true,
+                    suffix: !isLoggedIn ? null : '${profileController.userInfoModel?.loyaltyPoint != null ? profileController.userInfoModel!.loyaltyPoint.toString() : '0'} ${'points'.tr}',
+                  ) : const SizedBox(),
+                  (Get.find<SplashController>().configModel!.customerWalletStatus == 1) ? PortionWidget(
+                      icon: Images.walletIcon, title: 'my_wallet'.tr, hideDivider: true, route: RouteHelper.getWalletRoute(),
+                    suffix: !isLoggedIn ? null : PriceConverter.convertPrice(profileController.userInfoModel != null ? profileController.userInfoModel!.walletBalance : 0),
+                  ) : const SizedBox(),
                 ]),
 
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeDefault, 0),
-                    child: Text(
-                      'promotional_activity'.tr,
-                      style: robotoBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: BlinkitUi.ink),
-                    ),
-                  ),
-
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).cardColor,
-                      borderRadius: BorderRadius.circular(28),
-                      boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, 4))],
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeDefault),
-                    margin: const EdgeInsets.all(Dimensions.paddingSizeDefault),
-                    child: Column(children: [
-                      PortionWidget(
-                        icon: Images.couponIcon, title: 'coupon'.tr, route: RouteHelper.getCouponRoute(),
-                        hideDivider: Get.find<SplashController>().configModel!.loyaltyPointStatus == 1 || Get.find<SplashController>().configModel!.customerWalletStatus == 1 ? false : true,
-                      ),
-
-                      (Get.find<SplashController>().configModel!.loyaltyPointStatus == 1) ? PortionWidget(
-                          icon: Images.pointIcon, title: 'loyalty_points'.tr, route: RouteHelper.getLoyaltyRoute(),
-                        hideDivider: Get.find<SplashController>().configModel!.customerWalletStatus == 1 ? false : true,
-                        suffix: !isLoggedIn ? null : '${profileController.userInfoModel?.loyaltyPoint != null ? profileController.userInfoModel!.loyaltyPoint.toString() : '0'} ${'points'.tr}' ,
-                      ) : const SizedBox(),
-
-                      (Get.find<SplashController>().configModel!.customerWalletStatus == 1) ? PortionWidget(
-                          icon: Images.walletIcon, title: 'my_wallet'.tr, hideDivider: true, route: RouteHelper.getWalletRoute(),
-                        suffix: !isLoggedIn ? null : PriceConverter.convertPrice(profileController.userInfoModel != null ? profileController.userInfoModel!.walletBalance : 0),
-                      ) : const SizedBox(),
-                    ]),
-                  )
+                // --- Browse section ---
+                _sectionTitle(context, 'all_stores'.tr),
+                _sectionCard(context, children: [
+                  PortionWidget(icon: Images.favouriteUnselect, title: 'favourite'.tr, route: RouteHelper.getFavouriteScreen()),
+                  PortionWidget(icon: Images.couponIcon, title: 'coupon'.tr, route: RouteHelper.getCouponRoute(), hideDivider: true),
                 ]),
 
+                // --- Settings section (Dark Mode, Notifications, Language) ---
+                _sectionTitle(context, 'settings'.tr),
+                _sectionCard(context, children: [
+                  // Dark Mode toggle
+                  GetBuilder<ThemeController>(builder: (themeController) {
+                    return _toggleTile(
+                      context,
+                      icon: Get.isDarkMode ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
+                      title: 'dark_mode'.tr,
+                      value: themeController.darkTheme,
+                      onChanged: (bool? value) => themeController.toggleTheme(),
+                    );
+                  }),
+                  // Notifications toggle (only if logged in)
+                  isLoggedIn ? GetBuilder<AuthController>(builder: (authController) {
+                    return _toggleTile(
+                      context,
+                      icon: Icons.notifications_none_rounded,
+                      title: 'notification'.tr,
+                      value: authController.notification,
+                      hideDivider: false,
+                      onChanged: (bool? value) => Get.bottomSheet(const NotificationStatusChangeBottomSheet()),
+                    );
+                  }) : const SizedBox(),
+                  // Language picker
+                  PortionWidget(icon: Images.languageIcon, title: 'language'.tr, hideDivider: true, onTap: ()=> _manageLanguageFunctionality(), route: ''),
+                ]),
+
+                // --- Promotional Activity section ---
+                _sectionTitle(context, 'promotional_activity'.tr),
+                _sectionCard(context, children: [
+                  PortionWidget(
+                    icon: Images.couponIcon, title: 'coupon'.tr, route: RouteHelper.getCouponRoute(),
+                    hideDivider: Get.find<SplashController>().configModel!.loyaltyPointStatus == 1 || Get.find<SplashController>().configModel!.customerWalletStatus == 1 ? false : true,
+                  ),
+                  (Get.find<SplashController>().configModel!.loyaltyPointStatus == 1) ? PortionWidget(
+                      icon: Images.pointIcon, title: 'loyalty_points'.tr, route: RouteHelper.getLoyaltyRoute(),
+                    hideDivider: Get.find<SplashController>().configModel!.customerWalletStatus == 1 ? false : true,
+                    suffix: !isLoggedIn ? null : '${profileController.userInfoModel?.loyaltyPoint != null ? profileController.userInfoModel!.loyaltyPoint.toString() : '0'} ${'points'.tr}',
+                  ) : const SizedBox(),
+                  (Get.find<SplashController>().configModel!.customerWalletStatus == 1) ? PortionWidget(
+                      icon: Images.walletIcon, title: 'my_wallet'.tr, hideDivider: true, route: RouteHelper.getWalletRoute(),
+                    suffix: !isLoggedIn ? null : PriceConverter.convertPrice(profileController.userInfoModel != null ? profileController.userInfoModel!.walletBalance : 0),
+                  ) : const SizedBox(),
+                ]),
+
+                // --- Earnings section ---
                 (Get.find<SplashController>().configModel!.refEarningStatus == 1 ) || (Get.find<SplashController>().configModel!.toggleDmRegistration! && !ResponsiveHelper.isDesktop(context)) ||
                     (Get.find<SplashController>().configModel!.toggleStoreRegistration! && !ResponsiveHelper.isDesktop(context)) ?
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeDefault, 0),
-                    child: Text(
-                      'earnings'.tr,
-                      style: robotoBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: BlinkitUi.ink),
-                    ),
-                  ),
+                  _sectionTitle(context, 'earnings'.tr),
+                  _sectionCard(context, children: [
+                    (Get.find<SplashController>().configModel!.refEarningStatus == 1 ) ? PortionWidget(
+                        icon: Images.referIcon, title: 'refer_and_earn'.tr, route: RouteHelper.getReferAndEarnRoute(),
+                      hideDivider: (Get.find<SplashController>().configModel!.toggleDmRegistration! && !ResponsiveHelper.isDesktop(context)) ||
+                          (Get.find<SplashController>().configModel!.toggleStoreRegistration! && !ResponsiveHelper.isDesktop(context)) ? false : true,
+                    ) : const SizedBox(),
 
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).cardColor,
-                      borderRadius: BorderRadius.circular(28),
-                      boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, 4))],
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeDefault),
-                    margin: const EdgeInsets.all(Dimensions.paddingSizeDefault),
-                    child: Column(children: [
+                    (Get.find<SplashController>().configModel!.toggleDmRegistration! && !ResponsiveHelper.isDesktop(context)) ? PortionWidget(
+                        icon: Images.dmIcon, title: 'join_as_a_delivery_man'.tr, route: RouteHelper.getDeliverymanRegistrationRoute(),
+                      hideDivider: (Get.find<SplashController>().configModel!.toggleStoreRegistration! && !ResponsiveHelper.isDesktop(context)) ? false : true,
+                    ) : const SizedBox(),
 
-                      (Get.find<SplashController>().configModel!.refEarningStatus == 1 ) ? PortionWidget(
-                          icon: Images.referIcon, title: 'refer_and_earn'.tr, route: RouteHelper.getReferAndEarnRoute(),
-                        hideDivider: (Get.find<SplashController>().configModel!.toggleDmRegistration! && !ResponsiveHelper.isDesktop(context)) ||
-                            (Get.find<SplashController>().configModel!.toggleStoreRegistration! && !ResponsiveHelper.isDesktop(context)) ? false : true,
-                      ) : const SizedBox(),
-
-                      (Get.find<SplashController>().configModel!.toggleDmRegistration! && !ResponsiveHelper.isDesktop(context)) ? PortionWidget(
-                          icon: Images.dmIcon, title: 'join_as_a_delivery_man'.tr, route: RouteHelper.getDeliverymanRegistrationRoute(),
-                        hideDivider: (Get.find<SplashController>().configModel!.toggleStoreRegistration! && !ResponsiveHelper.isDesktop(context)) ? false : true,
-                      ) : const SizedBox(),
-
-                      (Get.find<SplashController>().configModel!.toggleStoreRegistration! && !ResponsiveHelper.isDesktop(context)) ? PortionWidget(
-                          icon: Images.storeIcon, title: 'open_vendor'.tr, hideDivider: true, route: RouteHelper.getRestaurantRegistrationRoute(),
-                      ) : const SizedBox(),
-                    ]),
-                  )
+                    (Get.find<SplashController>().configModel!.toggleStoreRegistration! && !ResponsiveHelper.isDesktop(context)) ? PortionWidget(
+                        icon: Images.storeIcon, title: 'open_vendor'.tr, hideDivider: true, route: RouteHelper.getRestaurantRegistrationRoute(),
+                    ) : const SizedBox(),
+                  ]),
                 ]) : const SizedBox(),
 
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeDefault, 0),
-                    child: Text(
-                      'help_and_support'.tr,
-                      style: robotoBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: BlinkitUi.ink),
-                    ),
-                  ),
+                // --- Help & Support section ---
+                _sectionTitle(context, 'help_and_support'.tr),
+                _sectionCard(context, children: [
+                  PortionWidget(icon: Images.chatIcon, title: 'live_chat'.tr, route: RouteHelper.getConversationRoute()),
+                  PortionWidget(icon: Images.helpIcon, title: 'help_and_support'.tr, route: RouteHelper.getSupportRoute()),
+                  PortionWidget(icon: Images.aboutIcon, title: 'about_us'.tr, route: RouteHelper.getHtmlRoute('about-us')),
+                  PortionWidget(icon: Images.termsIcon, title: 'terms_conditions'.tr, route: RouteHelper.getHtmlRoute('terms-and-condition')),
+                  PortionWidget(icon: Images.privacyIcon, title: 'privacy_policy'.tr, route: RouteHelper.getHtmlRoute('privacy-policy')),
 
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).cardColor,
-                      borderRadius: BorderRadius.circular(28),
-                      boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, 4))],
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeDefault),
-                    margin: const EdgeInsets.all(Dimensions.paddingSizeDefault),
-                    child: Column(children: [
-                      PortionWidget(icon: Images.chatIcon, title: 'live_chat'.tr, route: RouteHelper.getConversationRoute()),
-                      PortionWidget(icon: Images.helpIcon, title: 'help_and_support'.tr, route: RouteHelper.getSupportRoute()),
-                      PortionWidget(icon: Images.aboutIcon, title: 'about_us'.tr, route: RouteHelper.getHtmlRoute('about-us')),
-                      PortionWidget(icon: Images.termsIcon, title: 'terms_conditions'.tr, route: RouteHelper.getHtmlRoute('terms-and-condition')),
-                      PortionWidget(icon: Images.privacyIcon, title: 'privacy_policy'.tr, route: RouteHelper.getHtmlRoute('privacy-policy')),
+                  (Get.find<SplashController>().configModel!.refundPolicyStatus == 1 ) ? PortionWidget(
+                      icon: Images.refundIcon, title: 'refund_policy'.tr, route: RouteHelper.getHtmlRoute('refund-policy'),
+                    hideDivider: (Get.find<SplashController>().configModel!.cancellationPolicyStatus == 1 ) ||
+                        (Get.find<SplashController>().configModel!.shippingPolicyStatus == 1 ) ? false : true,
+                  ) : const SizedBox(),
 
-                      (Get.find<SplashController>().configModel!.refundPolicyStatus == 1 ) ? PortionWidget(
-                          icon: Images.refundIcon, title: 'refund_policy'.tr, route: RouteHelper.getHtmlRoute('refund-policy'),
-                        hideDivider: (Get.find<SplashController>().configModel!.cancellationPolicyStatus == 1 ) ||
-                            (Get.find<SplashController>().configModel!.shippingPolicyStatus == 1 ) ? false : true,
-                      ) : const SizedBox(),
+                  (Get.find<SplashController>().configModel!.cancellationPolicyStatus == 1 ) ? PortionWidget(
+                      icon: Images.cancelationIcon, title: 'cancellation_policy'.tr, route: RouteHelper.getHtmlRoute('cancellation-policy'),
+                    hideDivider: (Get.find<SplashController>().configModel!.shippingPolicyStatus == 1 ) ? false : true,
+                  ) : const SizedBox(),
 
-                      (Get.find<SplashController>().configModel!.cancellationPolicyStatus == 1 ) ? PortionWidget(
-                          icon: Images.cancelationIcon, title: 'cancellation_policy'.tr, route: RouteHelper.getHtmlRoute('cancellation-policy'),
-                        hideDivider: (Get.find<SplashController>().configModel!.shippingPolicyStatus == 1 ) ? false : true,
-                      ) : const SizedBox(),
-
-                      (Get.find<SplashController>().configModel!.shippingPolicyStatus == 1 ) ? PortionWidget(
-                          icon: Images.shippingIcon, title: 'shipping_policy'.tr, hideDivider: true, route: RouteHelper.getHtmlRoute('shipping-policy'),
-                      ) : const SizedBox(),
-                    ]),
-                  )
+                  (Get.find<SplashController>().configModel!.shippingPolicyStatus == 1 ) ? PortionWidget(
+                      icon: Images.shippingIcon, title: 'shipping_policy'.tr, hideDivider: true, route: RouteHelper.getHtmlRoute('shipping-policy'),
+                  ) : const SizedBox(),
                 ]),
 
+                // --- Logout / Sign In button ---
                 InkWell(
                   onTap: () async {
                     if(AuthHelper.isLoggedIn()) {
@@ -328,6 +314,64 @@ class _MenuScreenState extends State<MenuScreen> {
           )),
         ]);
       }),
+    );
+  }
+
+  /// Section title (e.g. "Account", "Settings")
+  Widget _sectionTitle(BuildContext context, String title) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeDefault, 0),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          title,
+          style: robotoBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: BlinkitUi.ink),
+        ),
+      ),
+    );
+  }
+
+  /// Rounded white card that groups a list of PortionWidget rows
+  Widget _sectionCard(BuildContext context, {required List<Widget> children}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, 4))],
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeDefault),
+      margin: const EdgeInsets.all(Dimensions.paddingSizeDefault),
+      child: Column(children: children),
+    );
+  }
+
+  /// A toggle row (used for Dark Mode and Notifications)
+  Widget _toggleTile(BuildContext context, {required IconData icon, required String title, required bool value, required Function(bool?) onChanged, bool hideDivider = false}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
+      child: Column(children: [
+        Row(children: [
+          Container(
+            height: 44, width: 44,
+            decoration: BoxDecoration(color: BlinkitUi.surface, borderRadius: BorderRadius.circular(14)),
+            child: Icon(icon, size: 22, color: BlinkitUi.ink),
+          ),
+          const SizedBox(width: Dimensions.paddingSizeDefault),
+          Expanded(child: Text(title, style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge, color: BlinkitUi.ink))),
+          Transform.scale(
+            scale: 0.85,
+            child: CupertinoSwitch(
+              value: value,
+              activeTrackColor: BlinkitUi.accent(),
+              onChanged: onChanged,
+            ),
+          ),
+        ]),
+        hideDivider ? const SizedBox() : Padding(
+          padding: const EdgeInsets.only(top: Dimensions.paddingSizeSmall),
+          child: Divider(height: 1, thickness: 1, color: Colors.black.withValues(alpha: 0.08)),
+        ),
+      ]),
     );
   }
 

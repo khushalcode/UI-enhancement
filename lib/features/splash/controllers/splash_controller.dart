@@ -256,6 +256,25 @@ class SplashController extends GetxController implements GetxService {
           _moduleList!.add(module);
         }
       }
+      // Default-module behaviour: if no module is currently selected
+      // (i.e. first app open, or after the user removed the module),
+      // auto-select the "food" module so the home screen opens directly
+      // into the food experience. If "food" is not available, fall back
+      // to the first module in the list.
+      if (_module == null && _moduleList!.isNotEmpty) {
+        int defaultIndex = _moduleList!.indexWhere(
+          (m) => m.moduleType.toString() == AppConstants.food,
+        );
+        if (defaultIndex < 0) {
+          defaultIndex = 0;
+        }
+        if (defaultIndex >= 0 && defaultIndex < _moduleList!.length) {
+          // Use setModule directly (not switchModule) to avoid triggering
+          // the full HomeScreen.loadData chain here — the home screen
+          // will load its own data once it builds.
+          setModule(_moduleList![defaultIndex], notify: false);
+        }
+      }
     }
     update();
   }
