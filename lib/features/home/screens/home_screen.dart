@@ -302,12 +302,22 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: GetBuilder<LocationController>(builder: (locationController) {
                             final Color textColor = BlinkitUi.onAccent();
                             return Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
-                              Text(AppConstants.appName, style: robotoBold.copyWith(color: textColor, fontSize: Dimensions.fontSizeLarge), maxLines: 1, overflow: TextOverflow.ellipsis),
-                              Text(
-                                (isFood || isGrocery || isShop) ? '20 minutes' : (AuthHelper.isLoggedIn() ? AddressHelper.getUserAddressFromSharedPref()!.addressType!.tr : 'your_location'.tr),
-                                style: robotoBold.copyWith(color: textColor, fontSize: 32, height: 1.15),
-                                maxLines: 1, overflow: TextOverflow.ellipsis,
-                              ),
+                              Row(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.center, children: [
+                                Text(AppConstants.appName, style: robotoBold.copyWith(color: textColor, fontSize: Dimensions.fontSizeLarge), maxLines: 1, overflow: TextOverflow.ellipsis),
+                                const SizedBox(width: 6),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: textColor.withValues(alpha: 0.18),
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Text(
+                                    (isFood || isGrocery || isShop) ? '21 minutes' : (AuthHelper.isLoggedIn() ? AddressHelper.getUserAddressFromSharedPref()!.addressType!.tr : 'your_location'.tr),
+                                    style: robotoBold.copyWith(color: textColor, fontSize: 11),
+                                    maxLines: 1, overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ]),
                               const SizedBox(height: 2),
                               Row(children: [
                                 Flexible(child: Text(

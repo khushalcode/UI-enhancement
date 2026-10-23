@@ -26,8 +26,8 @@ class SignUpScreenState extends State<SignUpScreen> {
       ) : null),
       endDrawer: const MenuDrawer(), endDrawerEnableOpenDragGesture: false,
       body: AuthLayout(
-        title: 'Create your account',
-        subtitle: 'Sign up to get started',
+        title: 'Sign Up',
+        subtitle: 'Create your account to get started',
         hasAppBar: !widget.exitFromApp,
         wideMaxWidth: 700,
         wideHeader: false,

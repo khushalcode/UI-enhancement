@@ -81,8 +81,8 @@ class SignInScreenState extends State<SignInScreen> {
         endDrawer: const MenuDrawer(),endDrawerEnableOpenDragGesture: false,
 
         body: AuthLayout(
-          title: 'Welcome back',
-          subtitle: 'Log in to continue shopping',
+          title: 'Login',
+          subtitle: 'Welcome back! Please enter your details',
           hasAppBar: !widget.exitFromApp,
           child: SignInView(
             exitFromApp: widget.exitFromApp,

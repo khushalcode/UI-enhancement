@@ -9,6 +9,7 @@ import 'package:sixam_mart/util/styles.dart';
 /// Nothing in here touches controllers, routes or validation.
 class AuthColors {
   static const Color yellow = Color(0xFFF8CB46);
+  static const Color yellowDeep = Color(0xFFFDD876);
   static const Color yellowSoft = Color(0xFFFFF3C4);
   static const Color ink = Color(0xFF1C1C1C);
 }
@@ -134,14 +135,14 @@ class AuthLayout extends StatelessWidget {
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter, end: Alignment.bottomCenter,
-          colors: [AuthColors.yellow, Color(0xFFFBDD7A)],
+          colors: [AuthColors.yellowDeep, AuthColors.yellow],
         ),
       ),
       child: Column(children: [
         AnimatedContainer(
           duration: reduceMotion ? Duration.zero : const Duration(milliseconds: 250),
           curve: Curves.easeOut,
-          height: keyboardOpen ? topInset + 6 : topInset + 170,
+          height: keyboardOpen ? topInset + 6 : topInset + 130,
           width: double.infinity,
           child: ClipRect(
             child: AnimatedOpacity(
@@ -154,11 +155,11 @@ class AuthLayout extends StatelessWidget {
                   Align(
                     alignment: Alignment.center,
                     child: Container(
-                      width: 92, height: 92,
-                      padding: const EdgeInsets.all(14),
+                      width: 80, height: 80,
+                      padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(26),
+                        borderRadius: BorderRadius.circular(22),
                         boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.12), blurRadius: 20, offset: const Offset(0, 8))],
                       ),
                       child: Image.asset(Images.logo, fit: BoxFit.contain),
