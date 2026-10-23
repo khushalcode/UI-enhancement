@@ -34,7 +34,6 @@ import 'package:sixam_mart/util/app_constants.dart';
 import 'package:sixam_mart/util/dimensions.dart';
 import 'package:sixam_mart/util/blinkit_ui.dart';
 import 'package:sixam_mart/helper/price_converter.dart';
-import 'package:sixam_mart/common/widgets/custom_image.dart';
 import 'package:sixam_mart/util/images.dart';
 import 'package:sixam_mart/util/styles.dart';
 import 'package:sixam_mart/common/widgets/voice_search_widget.dart';
@@ -477,50 +476,51 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ) : const SliverToBoxAdapter(),
 
-                  /// Inline module chip bar (pinned) — matches the Blinksy-style
-                  /// horizontal scrollable category tabs. Shows in both states:
-                  /// when no module is selected yet AND when one is selected.
+                  /// Inline module chip bar (pinned) — Blinksy-style horizontal
+                  /// scrollable text pills. Matches the reference screenshot:
+                  ///   • Selected = solid white pill with dark text
+                  ///   • Unselected = transparent with white text
+                  ///   • No icons, text only
+                  /// Shows in both states: when no module is selected yet AND
+                  /// when one is selected.
                   (!isTaxi && splashController.configModel!.module == null && splashController.moduleList != null && splashController.moduleList!.length > 1) ? SliverPersistentHeader(
                     pinned: true,
                     delegate: HomeSliverDelegate(
-                      height: 64,
+                      height: 52,
                       callback: (val){},
                       child: Container(
-                        height: 64, width: double.infinity,
+                        height: 52, width: double.infinity,
                         color: BlinkitUi.accent(),
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
-                          padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: 10),
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
                           itemCount: splashController.moduleList!.length,
                           itemBuilder: (context, index) {
                             final module = splashController.moduleList![index];
                             final bool selected = splashController.module != null && splashController.module!.id == module.id;
                             final Color tabColor = BlinkitUi.onAccent();
                             return Padding(
-                              padding: const EdgeInsets.only(right: 8),
+                              padding: const EdgeInsets.only(right: 6),
                               child: InkWell(
                                 onTap: selected ? null : () => splashController.switchModule(index, true),
-                                borderRadius: BorderRadius.circular(22),
+                                borderRadius: BorderRadius.circular(20),
                                 child: AnimatedContainer(
                                   duration: const Duration(milliseconds: 200),
-                                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                                  curve: Curves.easeOut,
+                                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
                                   decoration: BoxDecoration(
-                                    color: selected ? Colors.white : Colors.white.withValues(alpha: 0.22),
-                                    borderRadius: BorderRadius.circular(22),
-                                    border: Border.all(color: Colors.white.withValues(alpha: selected ? 0.0 : 0.35), width: 1),
+                                    color: selected ? Colors.white : Colors.transparent,
+                                    borderRadius: BorderRadius.circular(20),
                                   ),
-                                  child: Row(mainAxisSize: MainAxisSize.min, children: [
-                                    CustomImage(image: '${module.iconFullUrl}', height: 22, width: 22, fit: BoxFit.contain),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      module.moduleName ?? '',
-                                      style: (selected ? robotoBold : robotoMedium).copyWith(
-                                        color: selected ? BlinkitUi.ink : tabColor,
-                                        fontSize: Dimensions.fontSizeSmall,
-                                      ),
-                                      maxLines: 1, overflow: TextOverflow.ellipsis,
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    module.moduleName ?? '',
+                                    style: (selected ? robotoBold : robotoMedium).copyWith(
+                                      color: selected ? BlinkitUi.ink : tabColor,
+                                      fontSize: Dimensions.fontSizeDefault,
                                     ),
-                                  ]),
+                                    maxLines: 1, overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
                               ),
                             );
