@@ -6,6 +6,7 @@ import 'package:sixam_mart/features/item/domain/models/item_model.dart';
 import 'package:sixam_mart/helper/route_helper.dart';
 import 'package:sixam_mart/helper/price_converter.dart';
 import 'package:sixam_mart/helper/responsive_helper.dart';
+import 'package:sixam_mart/util/blinkit_ui.dart';
 import 'package:sixam_mart/util/dimensions.dart';
 import 'package:sixam_mart/util/styles.dart';
 import 'package:sixam_mart/common/widgets/custom_image.dart';
@@ -25,7 +26,7 @@ class SpecialOfferView extends StatelessWidget {
       List<Item>? discountedItemList = itemController.discountedItemList;
 
       return discountedItemList != null ? discountedItemList.isNotEmpty ? Container(
-        color: isFood ? Theme.of(context).primaryColor.withValues(alpha: 0.1) : Colors.transparent,
+        decoration: BoxDecoration(gradient: LinearGradient(colors: BlinkitUi.sectionTint(), begin: Alignment.topCenter, end: Alignment.bottomCenter)),
         padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeDefault),
         child: Column(children: [
           Padding(

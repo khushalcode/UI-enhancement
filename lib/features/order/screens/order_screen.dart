@@ -13,6 +13,7 @@ import 'package:sixam_mart/features/order/widgets/guest_track_order_input_view_w
 import 'package:sixam_mart/features/order/widgets/order_view_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sixam_mart/util/blinkit_ui.dart';
 
 class OrderScreen extends StatefulWidget {
   final int? index;
@@ -86,7 +87,7 @@ class OrderScreenState extends State<OrderScreen> with TickerProviderStateMixin 
                             bool selected = index == selectTypeIndex;
                             return Container(
                               decoration: BoxDecoration(
-                                color: selected ? Theme.of(context).primaryColor : Theme.of(context).cardColor,
+                                color: selected ? BlinkitUi.accent() : Theme.of(context).cardColor,
                                 borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
                                 border: Border.all(color: Theme.of(context).disabledColor, width: 0.3),
                               ),
@@ -101,7 +102,7 @@ class OrderScreenState extends State<OrderScreen> with TickerProviderStateMixin 
                                 },
                                 radius: Dimensions.radiusLarge,
                                 padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault),
-                                child: Text(type[index].tr, style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge, color: selected ? Colors.white : Theme.of(context).textTheme.bodyLarge!.color!.withValues(alpha: 0.7))),
+                                child: Text(type[index].tr, style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge, color: selected ? BlinkitUi.ink : Theme.of(context).textTheme.bodyLarge!.color!.withValues(alpha: 0.7))),
                               ),
                             );
                           }),
@@ -131,12 +132,13 @@ class OrderScreenState extends State<OrderScreen> with TickerProviderStateMixin 
                                 color: ResponsiveHelper.isDesktop(context) ? Colors.transparent : Theme.of(context).cardColor,
                                 child: TabBar(
                                   controller: _tabController,
-                                  indicatorColor: Theme.of(context).primaryColor,
+                                  indicator: BoxDecoration(color: BlinkitUi.accent(), borderRadius: BorderRadius.circular(Dimensions.radiusLarge)),
+                                  indicatorSize: TabBarIndicatorSize.tab, dividerColor: Colors.transparent,
                                   indicatorWeight: 3,
-                                  labelColor: Theme.of(context).primaryColor,
+                                  labelColor: BlinkitUi.ink,
                                   unselectedLabelColor: Theme.of(context).disabledColor,
                                   unselectedLabelStyle: robotoRegular.copyWith(color: Theme.of(context).disabledColor, fontSize: Dimensions.fontSizeSmall),
-                                  labelStyle: robotoBold.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).primaryColor),
+                                  labelStyle: robotoBold.copyWith(fontSize: Dimensions.fontSizeSmall, color: BlinkitUi.ink),
                                   tabs: [
                                     Tab(text: 'running'.tr),
                                     Tab(text: 'history'.tr),
@@ -156,12 +158,13 @@ class OrderScreenState extends State<OrderScreen> with TickerProviderStateMixin 
                           isScrollable: haveTaxiModule ? true : false,
                           padding: EdgeInsets.zero,
                           tabAlignment: haveTaxiModule ? TabAlignment.start : null,
-                          indicatorColor: Theme.of(context).primaryColor,
+                          indicator: BoxDecoration(color: BlinkitUi.accent(), borderRadius: BorderRadius.circular(Dimensions.radiusLarge)),
+                                  indicatorSize: TabBarIndicatorSize.tab, dividerColor: Colors.transparent,
                           indicatorWeight: 3,
-                          labelColor: Theme.of(context).primaryColor,
+                          labelColor: BlinkitUi.ink,
                           unselectedLabelColor: Theme.of(context).disabledColor,
                           unselectedLabelStyle: robotoRegular.copyWith(color: Theme.of(context).disabledColor, fontSize: Dimensions.fontSizeSmall),
-                          labelStyle: robotoBold.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).primaryColor),
+                          labelStyle: robotoBold.copyWith(fontSize: Dimensions.fontSizeSmall, color: BlinkitUi.ink),
                           tabs: [
                             Tab(text: 'running'.tr),
                             Tab(text: 'history'.tr),

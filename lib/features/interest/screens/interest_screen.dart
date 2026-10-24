@@ -10,6 +10,7 @@ import 'package:sixam_mart/common/widgets/no_data_screen.dart';
 import 'package:sixam_mart/common/widgets/web_menu_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sixam_mart/util/blinkit_ui.dart';
 
 class InterestScreen extends StatefulWidget {
   const InterestScreen({super.key});
@@ -41,7 +42,7 @@ class _InterestScreenState extends State<InterestScreen> {
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 const SizedBox(height: Dimensions.paddingSizeLarge),
 
-                Text('choose_your_interests'.tr, style: robotoMedium.copyWith(fontSize: 22)),
+                Text('choose_your_interests'.tr, style: robotoBold.copyWith(fontSize: 26, height: 1.2)),
                 const SizedBox(height: Dimensions.paddingSizeSmall),
 
                 Text('get_personalized_recommendations'.tr, style: robotoRegular.copyWith(color: Theme.of(context).disabledColor)),
@@ -64,7 +65,7 @@ class _InterestScreenState extends State<InterestScreen> {
                             vertical: Dimensions.paddingSizeExtraSmall, horizontal: Dimensions.paddingSizeSmall,
                           ),
                           decoration: BoxDecoration(
-                            color: categoryController.interestSelectedList![index] ? Theme.of(context).primaryColor
+                            color: categoryController.interestSelectedList![index] ? BlinkitUi.accent()
                                 : Theme.of(context).cardColor,
                             borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
                             boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 5, spreadRadius: 1)],
@@ -83,7 +84,7 @@ class _InterestScreenState extends State<InterestScreen> {
                               categoryController.categoryList![index].name!,
                               style: robotoMedium.copyWith(
                                 fontSize: Dimensions.fontSizeSmall,
-                                color: categoryController.interestSelectedList![index] ? Theme.of(context).cardColor
+                                color: categoryController.interestSelectedList![index] ? BlinkitUi.ink
                                     : Theme.of(context).textTheme.bodyLarge!.color,
                               ),
                               maxLines: 2, overflow: TextOverflow.ellipsis,

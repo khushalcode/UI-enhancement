@@ -56,7 +56,7 @@ class FoodHomeScreen extends StatelessWidget {
         child: CategoryView(),
       ),
 
-      const SpecialOfferView(isFood: true, isShop: false),
+      _wrapInGradientCard(context, const SpecialOfferView(isFood: true, isShop: false), BlinkitUi.sectionTint()),
 
       const SizedBox(height: 10),
 
@@ -129,10 +129,10 @@ class FoodHomeScreen extends StatelessWidget {
       const JustForYouView(),
       const HighlightWidget(),
       const TopOffersNearMe(),
-      const BestReviewItemView(),
+      _wrapInGradientCard(context, const BestReviewItemView(), BlinkitUi.sectionTint()),
       const BestStoreNearbyView(),
       const ItemThatYouLoveView(forShop: false),
-      const MostPopularItemView(isFood: true, isShop: false),
+      _wrapInGradientCard(context, const MostPopularItemView(isFood: true, isShop: false), BlinkitUi.sectionTint()),
       const NewOnMartView(isNewStore: true, isPharmacy: false, isShop: false),
       SizedBox(height: MediaQuery.of(context).size.height * 0.05),
     ]);

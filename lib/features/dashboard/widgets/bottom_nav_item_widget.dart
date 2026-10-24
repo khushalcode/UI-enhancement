@@ -17,7 +17,7 @@ class BottomNavItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final Color inactiveColor = BlinkitUi.ink.withValues(alpha: 0.6);
     final Color accent = accentColor ?? BlinkitUi.accent();
-    final Color iconColor = isSelected ? (accent == BlinkitUi.red ? Colors.white : BlinkitUi.ink) : inactiveColor;
+    final Color iconColor = isSelected ? BlinkitUi.ink : inactiveColor;
 
     return Expanded(
       child: InkWell(

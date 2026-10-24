@@ -61,7 +61,7 @@ class ShopHomeScreen extends StatelessWidget {
       SizedBox(height: MediaQuery.of(context).size.height * 0.02),
       const RecommendedStoreView(),
       SizedBox(height: MediaQuery.of(context).size.height * 0.02),
-      const MostPopularItemView(isFood: false, isShop: true),
+      _wrapInGradientCard(context, const MostPopularItemView(isFood: false, isShop: true), BlinkitUi.sectionTint()),
       SizedBox(height: MediaQuery.of(context).size.height * 0.02),
       const FlashSaleViewWidget(),
       SizedBox(height: MediaQuery.of(context).size.height * 0.02),

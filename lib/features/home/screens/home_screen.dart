@@ -43,6 +43,7 @@ import 'package:sixam_mart/common/widgets/paginated_list_view.dart';
 import 'package:sixam_mart/common/widgets/web_menu_bar.dart';
 import 'package:sixam_mart/features/home/screens/web_new_home_screen.dart';
 import 'package:sixam_mart/common/widgets/cart_widget.dart';
+import 'package:sixam_mart/common/widgets/custom_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sixam_mart/features/home/widgets/module_view.dart';
@@ -331,26 +332,16 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: GetBuilder<LocationController>(builder: (locationController) {
                             final Color textColor = BlinkitUi.onAccent();
                             return Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
-                              Row(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.center, children: [
-                                Text(AppConstants.appName, style: robotoBold.copyWith(color: textColor, fontSize: Dimensions.fontSizeLarge), maxLines: 1, overflow: TextOverflow.ellipsis),
-                                const SizedBox(width: 6),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color: textColor.withValues(alpha: 0.18),
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  child: Text(
-                                    (isFood || isGrocery || isShop) ? '21 minutes' : (AuthHelper.isLoggedIn() ? AddressHelper.getUserAddressFromSharedPref()!.addressType!.tr : 'your_location'.tr),
-                                    style: robotoBold.copyWith(color: textColor, fontSize: 11),
-                                    maxLines: 1, overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ]),
+                              Text(AppConstants.appName, style: robotoMedium.copyWith(color: textColor.withValues(alpha: 0.75), fontSize: Dimensions.fontSizeSmall), maxLines: 1, overflow: TextOverflow.ellipsis),
+                              Text(
+                                (isFood || isGrocery || isShop) ? '21 minutes' : (AuthHelper.isLoggedIn() ? AddressHelper.getUserAddressFromSharedPref()!.addressType!.tr : 'your_location'.tr),
+                                style: robotoBold.copyWith(color: textColor, fontSize: 28, height: 1.15),
+                                maxLines: 1, overflow: TextOverflow.ellipsis,
+                              ),
                               const SizedBox(height: 2),
                               Row(children: [
                                 Flexible(child: Text(
-                                  AddressHelper.getUserAddressFromSharedPref()!.address!,
+                                  '${AuthHelper.isLoggedIn() ? '${(AddressHelper.getUserAddressFromSharedPref()!.addressType ?? '').tr.toUpperCase()} - ' : ''}${AddressHelper.getUserAddressFromSharedPref()!.address!}',
                                   style: robotoMedium.copyWith(color: textColor, fontSize: Dimensions.fontSizeDefault),
                                   maxLines: 1, overflow: TextOverflow.ellipsis,
                                 )),
@@ -458,11 +449,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Row(children: [
                               const Icon(CupertinoIcons.search, size: 24, color: BlinkitUi.ink),
                               const SizedBox(width: Dimensions.paddingSizeSmall),
-                              Expanded(child: (isFood || isGrocery || isShop) ? const AnimatedSearchText() : Text(
-                                (Get.find<SplashController>().configModel!.moduleConfig != null && Get.find<SplashController>().configModel!.moduleConfig!.module != null && Get.find<SplashController>().configModel!.moduleConfig!.module!.showRestaurantText!) ? 'search_food_or_restaurant'.tr : 'search_item_or_store'.tr,
-                                style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).hintColor),
-                                maxLines: 1, overflow: TextOverflow.ellipsis,
-                              )),
+                              Expanded(child: const AnimatedSearchText()),
                               Container(height: 24, width: 1, color: Theme.of(context).disabledColor.withValues(alpha: 0.4)),
                               const SizedBox(width: Dimensions.paddingSizeSmall),
                               InkWell(
@@ -476,52 +463,46 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ) : const SliverToBoxAdapter(),
 
-                  /// Inline module chip bar (pinned) — Blinksy-style horizontal
-                  /// scrollable text pills. Matches the reference screenshot:
-                  ///   • Selected = solid white pill with dark text
-                  ///   • Unselected = transparent with white text
-                  ///   • No icons, text only
-                  /// Shows in both states: when no module is selected yet AND
-                  /// when one is selected.
+                  /// Inline module tab bar (pinned): module icon on top, label below,
+                  /// selected tab gets a dark underline (matches the reference video).
                   (!isTaxi && splashController.configModel!.module == null && splashController.moduleList != null && splashController.moduleList!.length > 1) ? SliverPersistentHeader(
                     pinned: true,
                     delegate: HomeSliverDelegate(
-                      height: 52,
+                      height: 78,
                       callback: (val){},
                       child: Container(
-                        height: 52, width: double.infinity,
+                        height: 78, width: double.infinity,
                         color: BlinkitUi.accent(),
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+                          padding: const EdgeInsets.symmetric(horizontal: 6),
                           itemCount: splashController.moduleList!.length,
                           itemBuilder: (context, index) {
                             final module = splashController.moduleList![index];
                             final bool selected = splashController.module != null && splashController.module!.id == module.id;
-                            final Color tabColor = BlinkitUi.onAccent();
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 6),
-                              child: InkWell(
-                                onTap: selected ? null : () => splashController.switchModule(index, true),
-                                borderRadius: BorderRadius.circular(20),
-                                child: AnimatedContainer(
-                                  duration: const Duration(milliseconds: 200),
-                                  curve: Curves.easeOut,
-                                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
-                                  decoration: BoxDecoration(
-                                    color: selected ? Colors.white : Colors.transparent,
-                                    borderRadius: BorderRadius.circular(20),
+                            return InkWell(
+                              onTap: selected ? null : () => splashController.switchModule(index, true),
+                              child: Container(
+                                constraints: const BoxConstraints(minWidth: 64),
+                                padding: const EdgeInsets.symmetric(horizontal: 10),
+                                child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
+                                  Opacity(
+                                    opacity: selected ? 1 : 0.8,
+                                    child: CustomImage(image: module.iconFullUrl ?? '', height: 30, width: 30, fit: BoxFit.contain),
                                   ),
-                                  alignment: Alignment.center,
-                                  child: Text(
+                                  const SizedBox(height: 4),
+                                  Text(
                                     module.moduleName ?? '',
-                                    style: (selected ? robotoBold : robotoMedium).copyWith(
-                                      color: selected ? BlinkitUi.ink : tabColor,
-                                      fontSize: Dimensions.fontSizeDefault,
-                                    ),
+                                    style: (selected ? robotoBold : robotoMedium).copyWith(color: BlinkitUi.ink, fontSize: Dimensions.fontSizeSmall),
                                     maxLines: 1, overflow: TextOverflow.ellipsis,
                                   ),
-                                ),
+                                  const SizedBox(height: 4),
+                                  AnimatedContainer(
+                                    duration: const Duration(milliseconds: 200),
+                                    height: 3, width: selected ? 52 : 0,
+                                    decoration: BoxDecoration(color: BlinkitUi.ink, borderRadius: BorderRadius.circular(2)),
+                                  ),
+                                ]),
                               ),
                             );
                           },
@@ -644,10 +625,7 @@ class _AnimatedSearchTextState extends State<AnimatedSearchText> with SingleTick
   void initState() {
     super.initState();
     
-    bool isGrocery = Get.find<SplashController>().module != null && Get.find<SplashController>().module!.moduleType.toString() == AppConstants.grocery;
-    searchWords = isGrocery 
-        ? ['Vegetables', 'Fruits', 'Milk', 'Bread', 'Oil', 'Rice']
-        : ['Food Thali', 'Biryani', 'Pizza', 'Burger', 'Sweets'];
+    searchWords = ['Pet Food', 'Grocery Items', 'Delicious Food'];
         
     _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 400));
     _slideAnimation = Tween<double>(begin: 0.5, end: 0.0).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
@@ -689,8 +667,8 @@ class _AnimatedSearchTextState extends State<AnimatedSearchText> with SingleTick
           child: Opacity(
             opacity: _fadeAnimation.value,
             child: Text(
-              'Search for "${searchWords[_currentIndex]}"',
-              style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).hintColor),
+              'Search \"${searchWords[_currentIndex]}\"',
+              style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeDefault, color: BlinkitUi.ink.withValues(alpha: 0.7)),
               maxLines: 1, overflow: TextOverflow.ellipsis,
             ),
           ),

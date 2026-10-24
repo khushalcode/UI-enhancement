@@ -253,7 +253,7 @@ class DashboardScreenState extends State<DashboardScreen> {
                                             }
                                           },
                                           elevation: 0,
-                                          child: isTaxiWithCache ? TaxiCartWidget(color: BlinkitUi.ink, size: 22) : isParcel ? Icon(CupertinoIcons.add, size: 34, color: BlinkitUi.ink) : CartWidget(color: BlinkitUi.ink, size: 26),
+                                          child: _LogoCartSwitcher(cart: isTaxiWithCache ? TaxiCartWidget(color: BlinkitUi.ink, size: 22) : isParcel ? Icon(CupertinoIcons.add, size: 34, color: BlinkitUi.ink) : CartWidget(color: BlinkitUi.ink, size: 26)),
                                         ),
                                     ),
                                   ),
@@ -352,3 +352,42 @@ class DashboardScreenState extends State<DashboardScreen> {
 
 }
 
+
+
+/// Presentation-only: centre nav tile alternates between the brand logo and the cart.
+class _LogoCartSwitcher extends StatefulWidget {
+  final Widget cart;
+  const _LogoCartSwitcher({required this.cart});
+
+  @override
+  State<_LogoCartSwitcher> createState() => _LogoCartSwitcherState();
+}
+
+class _LogoCartSwitcherState extends State<_LogoCartSwitcher> {
+  bool _showLogo = true;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 2), (_) {
+      if (mounted) setState(() => _showLogo = !_showLogo);
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 400),
+      child: _showLogo
+          ? ClipRRect(key: const ValueKey('logo'), borderRadius: BorderRadius.circular(12), child: Image.asset(Images.logo, height: 34, width: 34, fit: BoxFit.cover))
+          : KeyedSubtree(key: const ValueKey('cart'), child: widget.cart),
+    );
+  }
+}

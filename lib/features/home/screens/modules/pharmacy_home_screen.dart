@@ -1,3 +1,4 @@
+import 'package:sixam_mart/util/blinkit_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:sixam_mart/features/home/widgets/highlight_widget.dart';
 import 'package:sixam_mart/features/home/widgets/views/product_with_categories_view.dart';
@@ -36,7 +37,7 @@ class PharmacyHomeScreen extends StatelessWidget {
       SizedBox(height: MediaQuery.of(context).size.height * 0.02),
       const CategoryView(),
       SizedBox(height: MediaQuery.of(context).size.height * 0.02),
-      isLoggedIn ? _wrapInGradientCard(context, const VisitAgainView(), [const Color(0xFFE84D4F), const Color(0xFFFF6B00)]) : const SizedBox(),
+      isLoggedIn ? _wrapInGradientCard(context, const VisitAgainView(), BlinkitUi.sectionTint()) : const SizedBox(),
       SizedBox(height: MediaQuery.of(context).size.height * 0.02),
       const RecommendedStoreView(),
       SizedBox(height: MediaQuery.of(context).size.height * 0.02),
@@ -46,7 +47,7 @@ class PharmacyHomeScreen extends StatelessWidget {
       SizedBox(height: MediaQuery.of(context).size.height * 0.02),
       const MiddleSectionBannerView(),
       SizedBox(height: MediaQuery.of(context).size.height * 0.02),
-      const BestStoreNearbyView(),
+      _wrapInGradientCard(context, const BestStoreNearbyView(), BlinkitUi.sectionTint()),
       SizedBox(height: MediaQuery.of(context).size.height * 0.02),
       const JustForYouView(),
       SizedBox(height: MediaQuery.of(context).size.height * 0.02),
