@@ -111,7 +111,7 @@ class _ItemThatYouLoveViewState extends State<ItemThatYouLoveView> {
                         value = (value * 0.038).clamp(-1, 1);
                       }
                       return Transform.rotate(
-                        angle: pi * value,
+                        angle: 0,
                         child: carouselCard(index, recommendItems[index]),
                       );
                     },
@@ -222,7 +222,7 @@ class _ItemThatYouLoveShimmerViewState extends State<ItemThatYouLoveShimmerView>
                 builder: (context, child) {
                   double value = 0.0;
                   return Transform.rotate(
-                    angle: pi * value,
+                    angle: 0,
                     child: Padding(
                       padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
                       child: Hero(

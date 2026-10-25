@@ -39,7 +39,7 @@ class _MiddleSectionBannerViewState extends State<MiddleSectionBannerView> {
               carouselController: carouselController,
               itemCount: campaignController.basicCampaignList!.length,
               options: CarouselOptions(
-                height: isPharmacy ? 187 : 135,
+                height: isPharmacy ? 130 : 100,
                 //autoPlay: true,
                 enlargeCenterPage: true,
                 disableCenter: true,
@@ -54,7 +54,7 @@ class _MiddleSectionBannerViewState extends State<MiddleSectionBannerView> {
                     campaignController.basicCampaignList![itemIndex],
                   )),
                   child: Container(
-                    height: isPharmacy ? 187 : 135, width: double.infinity,
+                    height: isPharmacy ? 130 : 100, width: double.infinity,
                     decoration: BoxDecoration(
                       color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
@@ -115,14 +115,14 @@ class MiddleSectionBannerShimmerView extends StatelessWidget {
             CarouselSlider.builder(
               itemCount: 3,
               options: CarouselOptions(
-                height: isPharmacy ? 187 : 135,
+                height: isPharmacy ? 130 : 100,
                 enlargeCenterPage: true,
                 disableCenter: true,
                 viewportFraction: 0.95,
               ),
               itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) {
                 return Container(
-                  height: isPharmacy ? 187 : 135, width: double.infinity,
+                  height: isPharmacy ? 130 : 100, width: double.infinity,
                   decoration: BoxDecoration(
                     color: Colors.grey[300],
                     borderRadius: BorderRadius.circular(Dimensions.radiusLarge),

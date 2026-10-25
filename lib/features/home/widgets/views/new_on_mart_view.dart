@@ -24,7 +24,7 @@ class NewOnMartView extends StatelessWidget {
       List<Store>? storeList = storeController.latestStoreList;
 
       return storeList != null ? storeList.isNotEmpty ? Padding(
-        padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeDefault),
+        padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeExtraSmall),
         child: Column(children: [
 
           Padding(

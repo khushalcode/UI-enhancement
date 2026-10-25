@@ -13,7 +13,7 @@ import 'package:shimmer_animation/shimmer_animation.dart';
 import 'package:get/get.dart';
 import 'package:sixam_mart/common/controllers/theme_controller.dart';
 import 'package:sixam_mart/common/widgets/title_widget.dart';
-import 'package:sixam_mart/common/widgets/animated_gradient_border.dart';
+import 'package:sixam_mart/util/blinkit_ui.dart';
 
 class CategoryView extends StatelessWidget {
   const CategoryView({super.key});
@@ -410,20 +410,23 @@ class FoodCategoryView extends StatelessWidget {
     if (categoryController.categoryList == null) {
       return FoodCategoryShimmer(categoryController: categoryController);
     }
-    
+
+    final Color accent = BlinkitUi.accent();
+    final int total = categoryController.categoryList!.length;
+
     return GridView.builder(
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
-      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: Dimensions.paddingSizeSmall),
+      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: Dimensions.paddingSizeExtraSmall),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: ResponsiveHelper.isDesktop(context) ? 8 : ResponsiveHelper.isTab(context) ? 6 : 4,
-        crossAxisSpacing: Dimensions.paddingSizeSmall,
-        mainAxisSpacing: Dimensions.paddingSizeDefault,
-        childAspectRatio: ResponsiveHelper.isDesktop(context) ? 0.75 : 0.65, 
+        crossAxisSpacing: Dimensions.paddingSizeExtraSmall,
+        mainAxisSpacing: Dimensions.paddingSizeExtraSmall,
+        childAspectRatio: ResponsiveHelper.isDesktop(context) ? 0.9 : 0.82,
       ),
-      itemCount: categoryController.categoryList!.length > 11 ? 12 : categoryController.categoryList!.length,
+      itemCount: total > 11 ? 12 : total,
       itemBuilder: (context, index) {
-        bool isSeeAll = index == 11 && categoryController.categoryList!.length > 12;
+        bool isSeeAll = index == 11 && total > 12;
         return InkWell(
           onTap: () {
             if(isSeeAll) {
@@ -434,53 +437,35 @@ class FoodCategoryView extends StatelessWidget {
               ));
             }
           },
-          borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
-          child: Column(children: [
+          borderRadius: BorderRadius.circular(16),
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             Container(
+              height: 62, width: 62,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: isSeeAll ? Theme.of(context).primaryColor.withValues(alpha: 0.1) : Colors.transparent,
-                boxShadow: isSeeAll ? null : [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, spreadRadius: 0)],
+                color: isSeeAll ? accent.withValues(alpha: 0.25) : Colors.white,
+                border: Border.all(color: accent, width: 2),
+                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 8, offset: const Offset(0, 3))],
               ),
               child: ClipOval(
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    if (!isSeeAll) AnimatedGradientBorder(
-                      size: 74,
-                      borderWidth: 4,
-                      child: CustomImage(
-                        image: '${categoryController.categoryList![index].imageFullUrl}',
-                        height: 70, width: 70, fit: BoxFit.cover,
-                      ),
-                    ),
-                    if (isSeeAll) Container(
-                      height: 70, width: 70,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Theme.of(context).primaryColor.withValues(alpha: 0.8),
-                      ),
-                      child: Center(
-                        child: Text(
-                          '+${categoryController.categoryList!.length - 11}',
-                          style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge, color: Colors.white),
-                        ),
-                      ),
-                    ),
-                  ],
+                child: isSeeAll ? Center(
+                  child: Text(
+                    '+${total - 11}',
+                    style: robotoBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: BlinkitUi.ink),
+                  ),
+                ) : CustomImage(
+                  image: '${categoryController.categoryList![index].imageFullUrl}',
+                  height: 62, width: 62, fit: BoxFit.cover,
                 ),
               ),
             ),
-            const SizedBox(height: Dimensions.paddingSizeSmall),
+            const SizedBox(height: 4),
 
-            Expanded(child: Text(
-              isSeeAll ?  'see_all'.tr : categoryController.categoryList![index].name ?? '',
-              style: robotoMedium.copyWith(
-                fontSize: Dimensions.fontSizeSmall,
-                color: isSeeAll ? Theme.of(context).primaryColor : Theme.of(context).textTheme.bodyLarge?.color,
-              ),
+            Text(
+              isSeeAll ? 'see_all'.tr : categoryController.categoryList![index].name ?? '',
+              style: robotoMedium.copyWith(fontSize: 11, color: BlinkitUi.ink),
               maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center,
-            )),
+            ),
           ]),
         );
       },

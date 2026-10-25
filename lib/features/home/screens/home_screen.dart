@@ -308,7 +308,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   SliverToBoxAdapter(
                     child: Container(
                       color: BlinkitUi.accent(),
-                      padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeDefault, Dimensions.paddingSizeDefault),
+                      padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeDefault, 2, Dimensions.paddingSizeDefault, 4),
                       child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
 
                         (splashController.module != null && splashController.configModel!.module == null && splashController.moduleList != null && splashController.moduleList!.length != 1) ? Padding(
@@ -335,18 +335,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               Text(AppConstants.appName, style: robotoMedium.copyWith(color: textColor.withValues(alpha: 0.75), fontSize: Dimensions.fontSizeSmall), maxLines: 1, overflow: TextOverflow.ellipsis),
                               Text(
                                 (isFood || isGrocery || isShop) ? '21 minutes' : (AuthHelper.isLoggedIn() ? AddressHelper.getUserAddressFromSharedPref()!.addressType!.tr : 'your_location'.tr),
-                                style: robotoBold.copyWith(color: textColor, fontSize: 28, height: 1.15),
+                                style: robotoBold.copyWith(color: textColor, fontSize: 22, height: 1.1),
                                 maxLines: 1, overflow: TextOverflow.ellipsis,
                               ),
-                              const SizedBox(height: 2),
-                              Row(children: [
-                                Flexible(child: Text(
-                                  '${AuthHelper.isLoggedIn() ? '${(AddressHelper.getUserAddressFromSharedPref()!.addressType ?? '').tr.toUpperCase()} - ' : ''}${AddressHelper.getUserAddressFromSharedPref()!.address!}',
-                                  style: robotoMedium.copyWith(color: textColor, fontSize: Dimensions.fontSizeDefault),
-                                  maxLines: 1, overflow: TextOverflow.ellipsis,
-                                )),
-                                Icon(Icons.keyboard_arrow_down_rounded, color: textColor, size: 22),
-                              ]),
                             ]);
                           }),
                         )),
@@ -364,15 +355,15 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: GetBuilder<ProfileController>(builder: (profileController) {
                             final bool showBalance = AuthHelper.isLoggedIn() && profileController.userInfoModel != null;
                             return SizedBox(
-                              width: 58, height: 64,
+                              width: 44, height: 46,
                               child: Stack(alignment: Alignment.topCenter, children: [
                                 Container(
-                                  width: 52, height: 52,
+                                  width: 38, height: 38,
                                   decoration: BoxDecoration(
                                     color: Colors.white, shape: BoxShape.circle,
                                     boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 10, offset: const Offset(0, 4))],
                                   ),
-                                  child: Center(child: Image.asset(Images.walletIcon, height: 24, width: 24, color: BlinkitUi.ink)),
+                                  child: Center(child: Image.asset(Images.walletIcon, height: 20, width: 20, color: BlinkitUi.ink)),
                                 ),
                                 if (showBalance) Positioned(
                                   bottom: 0,
@@ -409,16 +400,16 @@ class _HomeScreenState extends State<HomeScreen> {
                               initials = '${f.isNotEmpty ? f[0] : ''}${l.isNotEmpty ? l[0] : ''}'.toUpperCase();
                             }
                             return Container(
-                              width: 52, height: 52,
+                              width: 38, height: 38,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 gradient: const LinearGradient(colors: [Color(0xFFFFE08A), Color(0xFFFFB92E)], begin: Alignment.topLeft, end: Alignment.bottomRight),
-                                border: Border.all(color: Colors.white, width: 3),
+                                border: Border.all(color: Colors.white, width: 2),
                                 boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.12), blurRadius: 10, offset: const Offset(0, 4))],
                               ),
                               child: Center(child: initials.isEmpty
-                                ? const Icon(CupertinoIcons.person_fill, size: 24, color: BlinkitUi.ink)
-                                : Text(initials, style: robotoBold.copyWith(color: BlinkitUi.ink, fontSize: Dimensions.fontSizeLarge))),
+                                ? const Icon(CupertinoIcons.person_fill, size: 20, color: BlinkitUi.ink)
+                                : Text(initials, style: robotoBold.copyWith(color: BlinkitUi.ink, fontSize: Dimensions.fontSizeDefault))),
                             );
                           }),
                         ),
@@ -431,30 +422,30 @@ class _HomeScreenState extends State<HomeScreen> {
                   !isTaxi ? SliverPersistentHeader(
                     pinned: true,
                     delegate: HomeSliverDelegate(
-                      height: 72,
+                      height: 50,
                       callback: (val){},
                       child: Container(
-                        height: 72, width: double.infinity,
+                        height: 50, width: double.infinity,
                         color: BlinkitUi.accent(),
-                        padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeDefault, 4, Dimensions.paddingSizeDefault, Dimensions.paddingSizeSmall),
+                        padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeDefault, 2, Dimensions.paddingSizeDefault, 8),
                         child: InkWell(
                           onTap: () => Get.toNamed(RouteHelper.getSearchRoute(queryText: '')),
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault),
                             decoration: BoxDecoration(
                               color: Theme.of(context).cardColor,
-                              borderRadius: BorderRadius.circular(30),
+                              borderRadius: BorderRadius.circular(22),
                               border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
                             ),
                             child: Row(children: [
-                              const Icon(CupertinoIcons.search, size: 24, color: BlinkitUi.ink),
+                              const Icon(CupertinoIcons.search, size: 18, color: BlinkitUi.ink),
                               const SizedBox(width: Dimensions.paddingSizeSmall),
                               Expanded(child: const AnimatedSearchText()),
-                              Container(height: 24, width: 1, color: Theme.of(context).disabledColor.withValues(alpha: 0.4)),
+                              Container(height: 18, width: 1, color: Theme.of(context).disabledColor.withValues(alpha: 0.4)),
                               const SizedBox(width: Dimensions.paddingSizeSmall),
                               InkWell(
                                 onTap: () => _openVoiceSearch(),
-                                child: const Padding(padding: EdgeInsets.all(4), child: Icon(CupertinoIcons.mic_fill, size: 24, color: BlinkitUi.ink)),
+                                child: const Padding(padding: EdgeInsets.all(4), child: Icon(CupertinoIcons.mic_fill, size: 18, color: BlinkitUi.ink)),
                               ),
                             ]),
                           ),
@@ -465,13 +456,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   /// Inline module tab bar (pinned): module icon on top, label below,
                   /// selected tab gets a dark underline (matches the reference video).
-                  (!isTaxi && splashController.configModel!.module == null && splashController.moduleList != null && splashController.moduleList!.length > 1) ? SliverPersistentHeader(
+                  (splashController.configModel!.module == null && splashController.moduleList != null && splashController.moduleList!.length > 1) ? SliverPersistentHeader(
                     pinned: true,
                     delegate: HomeSliverDelegate(
-                      height: 78,
+                      height: 62,
                       callback: (val){},
                       child: Container(
-                        height: 78, width: double.infinity,
+                        height: 62, width: double.infinity,
                         color: BlinkitUi.accent(),
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
@@ -488,15 +479,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
                                   Opacity(
                                     opacity: selected ? 1 : 0.8,
-                                    child: CustomImage(image: module.iconFullUrl ?? '', height: 30, width: 30, fit: BoxFit.contain),
+                                    child: CustomImage(image: module.iconFullUrl ?? '', height: 22, width: 22, fit: BoxFit.contain),
                                   ),
-                                  const SizedBox(height: 4),
+                                  const SizedBox(height: 2),
                                   Text(
                                     module.moduleName ?? '',
-                                    style: (selected ? robotoBold : robotoMedium).copyWith(color: BlinkitUi.ink, fontSize: Dimensions.fontSizeSmall),
+                                    style: (selected ? robotoBold : robotoMedium).copyWith(color: BlinkitUi.ink, fontSize: 11),
                                     maxLines: 1, overflow: TextOverflow.ellipsis,
                                   ),
-                                  const SizedBox(height: 4),
+                                  const SizedBox(height: 3),
                                   AnimatedContainer(
                                     duration: const Duration(milliseconds: 200),
                                     height: 3, width: selected ? 52 : 0,
@@ -668,7 +659,7 @@ class _AnimatedSearchTextState extends State<AnimatedSearchText> with SingleTick
             opacity: _fadeAnimation.value,
             child: Text(
               'Search \"${searchWords[_currentIndex]}\"',
-              style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeDefault, color: BlinkitUi.ink.withValues(alpha: 0.7)),
+              style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: BlinkitUi.ink.withValues(alpha: 0.7)),
               maxLines: 1, overflow: TextOverflow.ellipsis,
             ),
           ),

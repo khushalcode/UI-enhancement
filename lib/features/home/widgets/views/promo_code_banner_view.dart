@@ -35,7 +35,7 @@ class _PromoCodeBannerViewState extends State<PromoCodeBannerView> {
             carouselController: carouselController,
             itemCount: couponController.couponList!.length,
             options: CarouselOptions(
-              height: 135,
+              height: 120,
               autoPlay: true,
               enlargeCenterPage: true,
               disableCenter: true,
@@ -46,7 +46,7 @@ class _PromoCodeBannerViewState extends State<PromoCodeBannerView> {
             ),
             itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) {
               return Container(
-                height: 135, width: double.infinity,
+                height: 120, width: double.infinity,
                 padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeSmall),
                 decoration: BoxDecoration(
                   color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
@@ -153,7 +153,7 @@ class PromoCodeShimmerView extends StatelessWidget {
         CarouselSlider.builder(
           itemCount: 5,
           options: CarouselOptions(
-            height: 135,
+            height: 120,
             enlargeCenterPage: true,
             disableCenter: true,
             viewportFraction: 0.95,
@@ -163,7 +163,7 @@ class PromoCodeShimmerView extends StatelessWidget {
               duration: const Duration(seconds: 2),
               enabled: true,
               child: Container(
-                height: 135, width: double.infinity,
+                height: 120, width: double.infinity,
                 padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeSmall),
                 decoration: BoxDecoration(
                   color: Colors.grey[300],

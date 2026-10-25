@@ -71,7 +71,7 @@ class _FlashSaleCardState extends State<FlashSaleCard> {
                       value = (value * 0.038).clamp(-1, 1);
                     }
                     return Transform.rotate(
-                        angle: pi * value,
+                        angle: 0,
                         child: carouselCard(index, widget.activeProducts[index])
                     );
                   },

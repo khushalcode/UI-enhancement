@@ -19,6 +19,7 @@ import 'package:sixam_mart/features/home/widgets/views/visit_again_view.dart';
 import 'package:sixam_mart/features/home/widgets/banner_view.dart';
 import 'package:sixam_mart/features/home/controllers/home_controller.dart';
 import 'package:sixam_mart/util/styles.dart';
+import 'package:sixam_mart/util/dimensions.dart';
 
 class FoodHomeScreen extends StatelessWidget {
   const FoodHomeScreen({super.key});
@@ -28,31 +29,20 @@ class FoodHomeScreen extends StatelessWidget {
     bool isLoggedIn = AuthHelper.isLoggedIn();
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
 
+      /// Compact rounded banner sitting on the accent header colour
       Container(
         width: MediaQuery.of(context).size.width,
-        decoration: Get.find<ThemeController>().darkTheme ? null : BoxDecoration(
-          gradient: LinearGradient(
-            colors: [BlinkitUi.accent(), BlinkitUi.accent()],
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-          ),
-          borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(24),
-            bottomRight: Radius.circular(24),
-          ),
-        ),
-        child: const Column(
-          children: [
-            SizedBox(height: 10),
-            BannerView(isFeatured: false),
-            SizedBox(height: 20),
-          ],
+        color: Colors.transparent,
+        padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeSmall, Dimensions.paddingSizeExtraSmall, Dimensions.paddingSizeSmall, 0),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: const BannerView(isFeatured: false),
         ),
       ),
 
       /// Section: Category
       const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+        padding: EdgeInsets.symmetric(horizontal: 5, vertical: 4),
         child: CategoryView(),
       ),
 
@@ -62,15 +52,15 @@ class FoodHomeScreen extends StatelessWidget {
 
       GetBuilder<HomeController>(builder: (homeController) {
         return (homeController.cashBackOfferList != null && homeController.cashBackOfferList!.isNotEmpty) ? Container(
-          margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-          padding: const EdgeInsets.symmetric(vertical: 10),
+          margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          padding: const EdgeInsets.symmetric(vertical: 8),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [Color(0xFFFF6B00), Color(0xFFE84D4F)],
+              colors: [Color(0xFF2B2B2B), Color(0xFF1C1C1C)],
               begin: Alignment.topLeft, end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 20, offset: const Offset(0, 10))],
+            borderRadius: BorderRadius.circular(18),
+            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 12, offset: const Offset(0, 6))],
           ),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Padding(
@@ -79,13 +69,13 @@ class FoodHomeScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('Premium Rewards', style: robotoBold.copyWith(fontSize: 16, color: Colors.white)),
-                  const Icon(Icons.stars_rounded, color: Color(0xFFFF6B00), size: 24),
+                  Icon(Icons.stars_rounded, color: BlinkitUi.red, size: 22),
                 ],
               ),
             ),
             const SizedBox(height: 10),
             SizedBox(
-              height: 110,
+              height: 84,
               child: ListView.builder(
                 padding: const EdgeInsets.only(left: 20),
                 scrollDirection: Axis.horizontal,
@@ -104,7 +94,7 @@ class FoodHomeScreen extends StatelessWidget {
                       child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
                         Text(
                           homeController.cashBackOfferList![index].title ?? '',
-                          style: robotoBold.copyWith(color: const Color(0xFFFF6B00), fontSize: 16),
+                          style: robotoBold.copyWith(color: BlinkitUi.yellow, fontSize: 16),
                           maxLines: 1, overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 6),
@@ -122,15 +112,15 @@ class FoodHomeScreen extends StatelessWidget {
         ) : const SizedBox();
       }),
 
-      SizedBox(height: MediaQuery.of(context).size.height * 0.025),
+      const SizedBox(height: 8),
       _wrapInWhiteCard(context, isLoggedIn ? const VisitAgainView(fromFood: true) : const SizedBox()),
-      SizedBox(height: MediaQuery.of(context).size.height * 0.025),
+      const SizedBox(height: 8),
       _wrapInWhiteCard(context, const RecommendedStoreView()),
       const JustForYouView(),
       const HighlightWidget(),
       const TopOffersNearMe(),
       _wrapInGradientCard(context, const BestReviewItemView(), BlinkitUi.sectionTint()),
-      const BestStoreNearbyView(),
+      _wrapInWhiteCard(context, const BestStoreNearbyView()),
       const ItemThatYouLoveView(forShop: false),
       _wrapInGradientCard(context, const MostPopularItemView(isFood: true, isShop: false), BlinkitUi.sectionTint()),
       const NewOnMartView(isNewStore: true, isPharmacy: false, isShop: false),

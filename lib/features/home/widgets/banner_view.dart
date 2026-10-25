@@ -35,7 +35,7 @@ class BannerView extends StatelessWidget {
 
       return (bannerList != null && bannerList.isEmpty) ? const SizedBox() : Container(
         width: MediaQuery.of(context).size.width,
-        height: ResponsiveHelper.isDesktop(context) ? 400 : MediaQuery.of(context).size.width * 0.8,
+        height: ResponsiveHelper.isDesktop(context) ? 400 : MediaQuery.of(context).size.width * 0.5,
         padding: EdgeInsets.zero,
         child: bannerList != null ? Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
