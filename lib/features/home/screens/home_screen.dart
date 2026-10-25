@@ -557,7 +557,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-          backgroundColor: const Color(0xFFF8F9FA),
           floatingActionButton: null,
         );
       });
