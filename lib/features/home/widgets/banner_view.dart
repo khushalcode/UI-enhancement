@@ -1,3 +1,4 @@
+import 'package:sixam_mart/util/blinkit_ui.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:sixam_mart/features/banner/controllers/banner_controller.dart';
 import 'package:sixam_mart/features/item/controllers/item_controller.dart';
@@ -35,13 +36,17 @@ class BannerView extends StatelessWidget {
 
       return (bannerList != null && bannerList.isEmpty) ? const SizedBox() : Container(
         width: MediaQuery.of(context).size.width,
-        height: ResponsiveHelper.isDesktop(context) ? 400 : MediaQuery.of(context).size.width * 0.5,
+        height: ResponsiveHelper.isDesktop(context) ? 400 : MediaQuery.of(context).size.width * 0.44,
         padding: EdgeInsets.zero,
         child: bannerList != null ? Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
-              child: CarouselSlider.builder(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.isDesktop(context) ? 0 : Dimensions.paddingSizeSmall),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(ResponsiveHelper.isDesktop(context) ? 0 : 16),
+                  child: CarouselSlider.builder(
                 options: CarouselOptions(
                   autoPlay: true,
                   enlargeCenterPage: false,
@@ -115,6 +120,8 @@ class BannerView extends StatelessWidget {
                   );
                 },
               ),
+                ),
+              ),
             ),
 
             const SizedBox(height: Dimensions.paddingSizeExtraSmall),
@@ -143,7 +150,7 @@ class BannerView extends StatelessWidget {
           enabled: bannerList == null,
           child: Container(margin: const EdgeInsets.symmetric(horizontal: 10), decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
-            color: Colors.grey[300],
+            color: BlinkitUi.sectionTint()[0],
           )),
         ),
       );

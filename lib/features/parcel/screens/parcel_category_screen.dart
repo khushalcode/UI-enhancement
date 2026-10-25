@@ -11,6 +11,7 @@ import 'package:sixam_mart/features/parcel/controllers/parcel_controller.dart';
 import 'package:sixam_mart/helper/auth_helper.dart';
 import 'package:sixam_mart/helper/responsive_helper.dart';
 import 'package:sixam_mart/helper/route_helper.dart';
+import 'package:sixam_mart/util/blinkit_ui.dart';
 import 'package:sixam_mart/util/dimensions.dart';
 import 'package:sixam_mart/util/styles.dart';
 import 'package:sixam_mart/common/widgets/custom_image.dart';
@@ -66,7 +67,7 @@ class _ParcelCategoryScreenState extends State<ParcelCategoryScreen> {
                         itemCount: bannerController.parcelOtherBannerModel!.banners!.length,
                         options: CarouselOptions(
                           autoPlay: true,
-                          height: ResponsiveHelper.isDesktop(context) ? 395 : 120,
+                          height: ResponsiveHelper.isDesktop(context) ? 395 : 84,
                           enlargeCenterPage: true,
                           disableCenter: true,
                           viewportFraction: 1,
@@ -88,10 +89,10 @@ class _ParcelCategoryScreenState extends State<ParcelCategoryScreen> {
                         enabled: true,
                         child: Container(
                           width: MediaQuery.of(context).size.width,
-                          height: ResponsiveHelper.isDesktop(context) ? 395 : 150,
+                          height: ResponsiveHelper.isDesktop(context) ? 395 : 84,
                           padding: const EdgeInsets.only(top: Dimensions.paddingSizeDefault),
                           decoration: BoxDecoration(
-                            color: Colors.grey[300],
+                            color: BlinkitUi.sectionTint()[0],
                             borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
                           ),
                         ),

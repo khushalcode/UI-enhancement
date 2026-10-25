@@ -43,6 +43,7 @@ import 'package:sixam_mart/common/widgets/paginated_list_view.dart';
 import 'package:sixam_mart/common/widgets/web_menu_bar.dart';
 import 'package:sixam_mart/features/home/screens/web_new_home_screen.dart';
 import 'package:sixam_mart/common/widgets/cart_widget.dart';
+import 'package:sixam_mart/common/widgets/module_tabs_bar.dart';
 import 'package:sixam_mart/common/widgets/custom_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -229,7 +230,8 @@ class _HomeScreenState extends State<HomeScreen> {
           appBar: ResponsiveHelper.isDesktop(context) ? const WebMenuBar() : null,
           endDrawer: const MenuDrawer(),
           endDrawerEnableOpenDragGesture: false,
-          body: isParcel ? const ParcelCategoryScreen() : isCab ? const CabHomeScreen() : RefreshIndicator(
+          backgroundColor: (isParcel || isCab || Theme.of(context).brightness == Brightness.dark) ? null : BlinkitUi.sectionTint()[1],
+          body: isParcel ? const _ModuleScreenWithTabs(child: ParcelCategoryScreen()) : isCab ? const _ModuleScreenWithTabs(child: CabHomeScreen()) : RefreshIndicator(
               onRefresh: () async {
                 splashController.setRefreshing(true);
                 if (Get.find<SplashController>().module != null && !isTaxi && !isCab) {
@@ -666,5 +668,24 @@ class _AnimatedSearchTextState extends State<AnimatedSearchText> with SingleTick
         );
       },
     );
+  }
+}
+
+
+/// Presentation-only wrapper: shows the module switcher above screens that
+/// don't have their own (Parcel, Cab Booking).
+class _ModuleScreenWithTabs extends StatelessWidget {
+  final Widget child;
+  const _ModuleScreenWithTabs({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return GetBuilder<SplashController>(builder: (splashController) {
+      if (!ModuleTabsBar.isVisible(splashController)) return child;
+      return Column(children: [
+        const ModuleTabsBar(),
+        Expanded(child: MediaQuery.removePadding(context: context, removeTop: true, child: child)),
+      ]);
+    });
   }
 }

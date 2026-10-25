@@ -14,6 +14,7 @@ import 'package:get/get.dart';
 import 'package:sixam_mart/common/controllers/theme_controller.dart';
 import 'package:sixam_mart/common/widgets/title_widget.dart';
 import 'package:sixam_mart/util/blinkit_ui.dart';
+import 'package:sixam_mart/common/widgets/auto_scroller.dart';
 
 class CategoryView extends StatelessWidget {
   const CategoryView({super.key});
@@ -162,7 +163,7 @@ class PharmacyCategoryView extends StatelessWidget {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       SizedBox(
         height: 160,
-        child: categoryController.categoryList != null ? ListView.builder(
+        child: categoryController.categoryList != null ? AutoScroller(controller: scrollController, child: ListView.builder(
           controller: scrollController,
           physics: const BouncingScrollPhysics(),
           shrinkWrap: true,
@@ -248,7 +249,7 @@ class PharmacyCategoryView extends StatelessWidget {
               ),
             );
           },
-        ) : PharmacyCategoryShimmer(categoryController: categoryController),
+        )) : PharmacyCategoryShimmer(categoryController: categoryController),
       ),
     ]);
   }
@@ -263,91 +264,7 @@ class GroceryCategoryView extends StatelessWidget {
     if (categoryController.categoryList == null) {
       return GroceryCategoryShimmer(categoryController: categoryController);
     }
-    
-    return GridView.builder(
-      physics: const NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: Dimensions.paddingSizeSmall),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: ResponsiveHelper.isDesktop(context) ? 8 : ResponsiveHelper.isTab(context) ? 6 : 4,
-        crossAxisSpacing: Dimensions.paddingSizeSmall,
-        mainAxisSpacing: Dimensions.paddingSizeDefault,
-        childAspectRatio: ResponsiveHelper.isDesktop(context) ? 0.75 : 0.65, 
-      ),
-      itemCount: categoryController.categoryList!.length > 11 ? 12 : categoryController.categoryList!.length,
-      itemBuilder: (context, index) {
-        bool isSeeAll = index == 11 && categoryController.categoryList!.length > 12;
-        return InkWell(
-          onTap: () {
-            if(isSeeAll) {
-              Get.toNamed(RouteHelper.getCategoryRoute());
-            } else {
-              Get.toNamed(RouteHelper.getCategoryItemRoute(
-                categoryController.categoryList![index].id, categoryController.categoryList![index].name!,
-              ));
-            }
-          },
-          borderRadius: BorderRadius.circular(16),
-          child: Column(children: [
-            AspectRatio(
-              aspectRatio: 1.0,
-              child: isSeeAll ? Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Theme.of(context).primaryColor.withValues(alpha: 0.2), width: 1),
-                ),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.grid_view_rounded,
-                        color: Theme.of(context).primaryColor,
-                        size: 28,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '+${categoryController.categoryList!.length - 11}',
-                        style: robotoBold.copyWith(
-                          fontSize: Dimensions.fontSizeDefault,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ) : Container(
-                decoration: BoxDecoration(
-                  color: Get.find<ThemeController>().darkTheme 
-                      ? Theme.of(context).disabledColor.withValues(alpha: 0.1) 
-                      : const Color(0xFFECEEF2),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                padding: const EdgeInsets.only(top: 14, left: 6, right: 6, bottom: 2),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: CustomImage(
-                    image: '${categoryController.categoryList![index].imageFullUrl}',
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-
-            Expanded(child: Text(
-              isSeeAll ? 'see_all'.tr : categoryController.categoryList![index].name ?? '',
-              style: robotoBold.copyWith(
-                fontSize: 12,
-                color: isSeeAll ? Theme.of(context).primaryColor : Theme.of(context).textTheme.bodyLarge?.color,
-              ),
-              maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center,
-            )),
-          ]),
-        );
-      },
-    );
+    return AutoCategoryRows(categoryController: categoryController, circular: false);
   }
 }
 
@@ -378,7 +295,7 @@ class GroceryCategoryShimmer extends StatelessWidget {
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
-                  color: Colors.grey[300],
+                  color: BlinkitUi.sectionTint()[0],
                 ),
               ),
             ),
@@ -391,7 +308,7 @@ class GroceryCategoryShimmer extends StatelessWidget {
               height: 12, width: 60,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(4),
-                color: Colors.grey[300],
+                color: BlinkitUi.sectionTint()[0],
               ),
             ),
           ),
@@ -410,66 +327,144 @@ class FoodCategoryView extends StatelessWidget {
     if (categoryController.categoryList == null) {
       return FoodCategoryShimmer(categoryController: categoryController);
     }
+    return AutoCategoryRows(categoryController: categoryController, circular: true);
+  }
+}
 
+/// Redesigned categories: two slowly auto-scrolling rows (second row runs in the
+/// opposite direction), themed tiles and a soft fade/slide-in. Tap targets are
+/// exactly the same routes as before.
+class AutoCategoryRows extends StatefulWidget {
+  final CategoryController categoryController;
+  final bool circular;
+  const AutoCategoryRows({super.key, required this.categoryController, required this.circular});
+
+  @override
+  State<AutoCategoryRows> createState() => _AutoCategoryRowsState();
+}
+
+class _AutoCategoryRowsState extends State<AutoCategoryRows> {
+  final ScrollController _row1 = ScrollController();
+  final ScrollController _row2 = ScrollController();
+
+  @override
+  void dispose() {
+    _row1.dispose();
+    _row2.dispose();
+    super.dispose();
+  }
+
+  Widget _tile(BuildContext context, int index, int order) {
+    final category = widget.categoryController.categoryList![index];
     final Color accent = BlinkitUi.accent();
-    final int total = categoryController.categoryList!.length;
+    final List<Color> tint = BlinkitUi.sectionTint();
+    final double box = widget.circular ? 62 : 68;
 
-    return GridView.builder(
-      physics: const NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: Dimensions.paddingSizeExtraSmall),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: ResponsiveHelper.isDesktop(context) ? 8 : ResponsiveHelper.isTab(context) ? 6 : 4,
-        crossAxisSpacing: Dimensions.paddingSizeExtraSmall,
-        mainAxisSpacing: Dimensions.paddingSizeExtraSmall,
-        childAspectRatio: ResponsiveHelper.isDesktop(context) ? 0.9 : 0.82,
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: 0, end: 1),
+      duration: Duration(milliseconds: 350 + (order > 8 ? 8 : order) * 60),
+      curve: Curves.easeOutCubic,
+      builder: (context, value, child) => Opacity(
+        opacity: value,
+        child: Transform.translate(offset: Offset(0, (1 - value) * 12), child: child),
       ),
-      itemCount: total > 11 ? 12 : total,
-      itemBuilder: (context, index) {
-        bool isSeeAll = index == 11 && total > 12;
-        return InkWell(
-          onTap: () {
-            if(isSeeAll) {
-              Get.toNamed(RouteHelper.getCategoryRoute());
-            } else {
-              Get.toNamed(RouteHelper.getCategoryItemRoute(
-                categoryController.categoryList![index].id, categoryController.categoryList![index].name!,
-              ));
-            }
-          },
-          borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        onTap: () => Get.toNamed(RouteHelper.getCategoryItemRoute(category.id, category.name!)),
+        borderRadius: BorderRadius.circular(16),
+        child: SizedBox(
+          width: 82,
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             Container(
-              height: 62, width: 62,
+              height: box, width: box,
               decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: isSeeAll ? accent.withValues(alpha: 0.25) : Colors.white,
-                border: Border.all(color: accent, width: 2),
+                shape: widget.circular ? BoxShape.circle : BoxShape.rectangle,
+                borderRadius: widget.circular ? null : BorderRadius.circular(18),
+                gradient: widget.circular ? null : LinearGradient(colors: [tint[0], Colors.white], begin: Alignment.topLeft, end: Alignment.bottomRight),
+                color: widget.circular ? Colors.white : null,
+                border: Border.all(color: accent.withValues(alpha: 0.9), width: widget.circular ? 2 : 1.2),
                 boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 8, offset: const Offset(0, 3))],
               ),
-              child: ClipOval(
-                child: isSeeAll ? Center(
-                  child: Text(
-                    '+${total - 11}',
-                    style: robotoBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: BlinkitUi.ink),
-                  ),
-                ) : CustomImage(
-                  image: '${categoryController.categoryList![index].imageFullUrl}',
-                  height: 62, width: 62, fit: BoxFit.cover,
+              padding: widget.circular ? EdgeInsets.zero : const EdgeInsets.all(6),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(widget.circular ? 100 : 12),
+                child: CustomImage(
+                  image: '${category.imageFullUrl}',
+                  height: box, width: box, fit: widget.circular ? BoxFit.cover : BoxFit.contain,
                 ),
               ),
             ),
             const SizedBox(height: 4),
-
             Text(
-              isSeeAll ? 'see_all'.tr : categoryController.categoryList![index].name ?? '',
+              category.name ?? '',
               style: robotoMedium.copyWith(fontSize: 11, color: BlinkitUi.ink),
               maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center,
             ),
           ]),
-        );
-      },
+        ),
+      ),
     );
+  }
+
+  Widget _seeAllTile(BuildContext context) {
+    final Color accent = BlinkitUi.accent();
+    return InkWell(
+      onTap: () => Get.toNamed(RouteHelper.getCategoryRoute()),
+      borderRadius: BorderRadius.circular(16),
+      child: SizedBox(
+        width: 82,
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Container(
+            height: widget.circular ? 62 : 68, width: widget.circular ? 62 : 68,
+            decoration: BoxDecoration(
+              shape: widget.circular ? BoxShape.circle : BoxShape.rectangle,
+              borderRadius: widget.circular ? null : BorderRadius.circular(18),
+              color: accent.withValues(alpha: 0.35),
+              border: Border.all(color: accent, width: 1.2),
+            ),
+            child: const Icon(Icons.arrow_forward_rounded, color: BlinkitUi.ink, size: 26),
+          ),
+          const SizedBox(height: 4),
+          Text('see_all'.tr, style: robotoBold.copyWith(fontSize: 11, color: BlinkitUi.ink), maxLines: 1),
+        ]),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final int total = widget.categoryController.categoryList!.length;
+    final List<int> first = [];
+    final List<int> second = [];
+    for (int i = 0; i < total; i++) {
+      (i.isEven ? first : second).add(i);
+    }
+    final double rowHeight = widget.circular ? 104 : 110;
+
+    Widget buildRow(List<int> ids, ScrollController controller, {bool reverse = false, bool withSeeAll = false}) {
+      return SizedBox(
+        height: rowHeight,
+        child: AutoScroller(
+          controller: controller,
+          reverse: reverse,
+          child: ListView.builder(
+            controller: controller,
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
+            itemCount: ids.length + (withSeeAll ? 1 : 0),
+            itemBuilder: (context, i) {
+              if (withSeeAll && i == ids.length) return _seeAllTile(context);
+              return _tile(context, ids[i], i);
+            },
+          ),
+        ),
+      );
+    }
+
+    return Column(children: [
+      buildRow(first, _row1),
+      if (second.isNotEmpty) buildRow(second, _row2, reverse: true, withSeeAll: total > 8),
+    ]);
   }
 }
 
@@ -548,7 +543,7 @@ class FoodCategoryShimmer extends StatelessWidget {
               enabled: true,
               child: Container(
                 height: 70, width: 70,
-                color: Colors.grey[300],
+                color: BlinkitUi.sectionTint()[0],
               ),
             ),
           ),
@@ -559,7 +554,7 @@ class FoodCategoryShimmer extends StatelessWidget {
             enabled: true,
             child: Container(
               height: 10, width: 50,
-              color: Colors.grey[300],
+              color: BlinkitUi.sectionTint()[0],
             ),
           ),
         ]);
