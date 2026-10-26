@@ -7,6 +7,7 @@ import 'package:sixam_mart/features/item/domain/models/item_model.dart';
 import 'package:sixam_mart/common/models/module_model.dart';
 import 'package:sixam_mart/features/store/domain/models/store_model.dart';
 import 'package:sixam_mart/helper/route_helper.dart';
+import 'package:sixam_mart/util/blinkit_ui.dart';
 import 'package:sixam_mart/util/dimensions.dart';
 import 'package:sixam_mart/util/styles.dart';
 import 'package:sixam_mart/common/widgets/custom_image.dart';
@@ -33,13 +34,17 @@ class BannerView extends StatelessWidget {
 
       return (bannerList != null && bannerList.isEmpty) ? const SizedBox() : Container(
         width: MediaQuery.of(context).size.width,
-        height: ResponsiveHelper.isDesktop(context) ? 500 : MediaQuery.of(context).size.width * 0.8,
+        height: ResponsiveHelper.isDesktop(context) ? 500 : MediaQuery.of(context).size.width * 0.44,
         padding: EdgeInsets.zero,
         child: bannerList != null ? Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
-              child: CarouselSlider.builder(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.isDesktop(context) ? 0 : Dimensions.paddingSizeSmall),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(ResponsiveHelper.isDesktop(context) ? 0 : 16),
+                  child: CarouselSlider.builder(
                 options: CarouselOptions(
                   autoPlay: true,
                   enlargeCenterPage: false,
@@ -109,6 +114,8 @@ class BannerView extends StatelessWidget {
                   );
                 },
               ),
+                ),
+              ),
             ),
 
             const SizedBox(height: Dimensions.paddingSizeExtraSmall),
@@ -137,7 +144,7 @@ class BannerView extends StatelessWidget {
           enabled: bannerList == null,
           child: Container(margin: const EdgeInsets.symmetric(horizontal: 10), decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
-            color: Colors.grey[300],
+            color: BlinkitUi.sectionTint()[0],
           )),
         ),
       );

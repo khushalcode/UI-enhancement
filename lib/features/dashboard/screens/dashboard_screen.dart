@@ -217,12 +217,12 @@ class DashboardScreenState extends State<DashboardScreen> {
                                 return const SizedBox();
                               }
                               return Container(
-                                width: size.width, height: GetPlatform.isIOS ? 88 : 80,
-                                margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                                width: size.width, height: GetPlatform.isIOS ? 68 : 60,
+                                margin: const EdgeInsets.fromLTRB(14, 0, 14, 10),
                                 decoration: BoxDecoration(
                                   color: Theme.of(context).cardColor,
-                                  borderRadius: BorderRadius.circular(28),
-                                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.12), blurRadius: 24, spreadRadius: 0, offset: const Offset(0, 8))],
+                                  borderRadius: BorderRadius.circular(24),
+                                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.12), blurRadius: 18, spreadRadius: 0, offset: const Offset(0, 6))],
                                 ),
                                 child: Stack(children: [
 
@@ -230,13 +230,13 @@ class DashboardScreenState extends State<DashboardScreen> {
                                     heightFactor: 0.6,
                                     child: ResponsiveHelper.isDesktop(context) ? null : (widget.fromSplash && Get.find<LocationController>().showLocationSuggestion && active) ? null
                                       : (orderController.showBottomSheet && orderController.runningOrderModel != null && orderController.runningOrderModel!.orders!.isNotEmpty && _isLogin) ? const SizedBox() : Container(
-                                        width: 76, height: 76,
+                                        width: 62, height: 62,
                                         decoration: BoxDecoration(
                                           color: BlinkitUi.accent(),
-                                          borderRadius: BorderRadius.circular(22),
-                                          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.18), blurRadius: 14, offset: const Offset(0, 6))],
+                                          borderRadius: BorderRadius.circular(19),
+                                          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.18), blurRadius: 12, offset: const Offset(0, 5))],
                                         ),
-                                        padding: const EdgeInsets.all(8),
+                                        padding: const EdgeInsets.all(6),
                                         child: FloatingActionButton(
                                           backgroundColor: BlinkitUi.gold,
                                           shape: const CircleBorder(),
@@ -261,7 +261,7 @@ class DashboardScreenState extends State<DashboardScreen> {
                                   ResponsiveHelper.isDesktop(context) ? const SizedBox() : (widget.fromSplash && Get.find<LocationController>().showLocationSuggestion && active) ? const SizedBox()
                                   : (orderController.showBottomSheet && orderController.runningOrderModel != null && orderController.runningOrderModel!.orders!.isNotEmpty && _isLogin) ? const SizedBox() : Center(
                                     child: SizedBox(
-                                        width: size.width, height: 80,
+                                        width: size.width, height: GetPlatform.isIOS ? 68 : 60,
                                         child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
                                           BottomNavItemWidget(
                                             title: 'home'.tr, selectedIcon: Images.homeSelect,
@@ -295,7 +295,7 @@ class DashboardScreenState extends State<DashboardScreen> {
                         ),
                       ]),
 
-                    persistentContentHeight: (splashController.module != null && splashController.module!.moduleType.toString() == AppConstants.cab) ? 0 : (widget.fromSplash && Get.find<LocationController>().showLocationSuggestion && active) ? 0 : GetPlatform.isIOS ? 110 : 100,
+                    persistentContentHeight: (splashController.module != null && splashController.module!.moduleType.toString() == AppConstants.cab) ? 0 : (widget.fromSplash && Get.find<LocationController>().showLocationSuggestion && active) ? 0 : GetPlatform.isIOS ? 90 : 82,
 
                     onIsContractedCallback: () {
                       if(!orderController.showOneOrder) {
@@ -386,7 +386,7 @@ class _LogoCartSwitcherState extends State<_LogoCartSwitcher> {
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 400),
       child: _showLogo
-          ? ClipRRect(key: const ValueKey('logo'), borderRadius: BorderRadius.circular(12), child: Image.asset(Images.logo, height: 34, width: 34, fit: BoxFit.cover))
+          ? ClipRRect(key: const ValueKey('logo'), borderRadius: BorderRadius.circular(12), child: Image.asset(Images.logo, height: 30, width: 30, fit: BoxFit.cover))
           : KeyedSubtree(key: const ValueKey('cart'), child: widget.cart),
     );
   }

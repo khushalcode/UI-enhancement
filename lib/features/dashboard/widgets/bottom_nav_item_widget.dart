@@ -28,15 +28,15 @@ class BottomNavItemWidget extends StatelessWidget {
           AnimatedContainer(
             duration: const Duration(milliseconds: 220),
             curve: Curves.easeOut,
-            height: 46, width: 46,
+            height: 36, width: 38,
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: isSelected ? accent : Colors.transparent,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: isSelected ? BlinkitUi.ink : Colors.transparent, width: 2.4),
+              borderRadius: BorderRadius.circular(13),
+              border: Border.all(color: isSelected ? BlinkitUi.ink : Colors.transparent, width: 2),
             ),
-            child: iconData != null ? Icon(iconData, size: 24, color: iconColor) : Image.asset(
-              isSelected ? selectedIcon! : unSelectedIcon!, height: 24, width: 24, color: iconColor,
+            child: iconData != null ? Icon(iconData, size: 20, color: iconColor) : Image.asset(
+              isSelected ? selectedIcon! : unSelectedIcon!, height: 20, width: 20, color: iconColor,
             ),
           ),
 
@@ -46,7 +46,7 @@ class BottomNavItemWidget extends StatelessWidget {
             title,
             style: robotoRegular.copyWith(
               color: isSelected ? BlinkitUi.ink : inactiveColor,
-              fontSize: 12,
+              fontSize: 10.5,
               fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
             ),
           ),

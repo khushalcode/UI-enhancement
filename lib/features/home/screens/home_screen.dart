@@ -230,7 +230,6 @@ class _HomeScreenState extends State<HomeScreen> {
           appBar: ResponsiveHelper.isDesktop(context) ? const WebMenuBar() : null,
           endDrawer: const MenuDrawer(),
           endDrawerEnableOpenDragGesture: false,
-          backgroundColor: (isParcel || isCab || Theme.of(context).brightness == Brightness.dark) ? null : BlinkitUi.sectionTint()[1],
           body: isParcel ? const _ModuleScreenWithTabs(child: ParcelCategoryScreen()) : isCab ? const _ModuleScreenWithTabs(child: CabHomeScreen()) : RefreshIndicator(
               onRefresh: () async {
                 splashController.setRefreshing(true);
@@ -557,6 +556,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
+          backgroundColor: (isParcel || isCab || Theme.of(context).brightness == Brightness.dark) ? null : BlinkitUi.sectionTint()[1],
           floatingActionButton: null,
         );
       });

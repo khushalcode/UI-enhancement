@@ -45,9 +45,9 @@ class GroceryHomeScreen extends StatelessWidget {
         ),
         child:  const Column(
           children: [
-            SizedBox(height: 10),
+            SizedBox(height: 6),
             BannerView(isFeatured: false),
-            SizedBox(height: 20),
+            SizedBox(height: 10),
           ],
         ),
       ),
