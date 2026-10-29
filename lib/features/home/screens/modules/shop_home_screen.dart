@@ -1,3 +1,5 @@
+import 'package:sixam_mart/features/home/widgets/views/campaign_tiles_view.dart';
+import 'package:sixam_mart/features/home/widgets/views/bestsellers_view.dart';
 import 'package:sixam_mart/util/blinkit_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -52,6 +54,9 @@ class ShopHomeScreen extends StatelessWidget {
         ),
       ),
 
+      const SizedBox(height: 8),
+      const CampaignTilesView(),
+      const BestsellersView(),
       SizedBox(height: MediaQuery.of(context).size.height * 0.02),
       const CategoryView(),
       SizedBox(height: MediaQuery.of(context).size.height * 0.02),

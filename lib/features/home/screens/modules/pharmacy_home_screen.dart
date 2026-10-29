@@ -1,3 +1,4 @@
+import 'package:sixam_mart/features/home/widgets/views/bestsellers_view.dart';
 import 'package:sixam_mart/util/blinkit_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:sixam_mart/features/home/widgets/highlight_widget.dart';
@@ -34,6 +35,8 @@ class PharmacyHomeScreen extends StatelessWidget {
         ),
       ),
 
+      const SizedBox(height: 8),
+      const BestsellersView(),
       SizedBox(height: MediaQuery.of(context).size.height * 0.02),
       const CategoryView(),
       SizedBox(height: MediaQuery.of(context).size.height * 0.02),

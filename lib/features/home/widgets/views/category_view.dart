@@ -14,7 +14,6 @@ import 'package:get/get.dart';
 import 'package:sixam_mart/common/controllers/theme_controller.dart';
 import 'package:sixam_mart/common/widgets/title_widget.dart';
 import 'package:sixam_mart/util/blinkit_ui.dart';
-import 'package:sixam_mart/common/widgets/auto_scroller.dart';
 
 class CategoryView extends StatelessWidget {
   const CategoryView({super.key});
@@ -163,7 +162,7 @@ class PharmacyCategoryView extends StatelessWidget {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       SizedBox(
         height: 160,
-        child: categoryController.categoryList != null ? AutoScroller(controller: scrollController, child: ListView.builder(
+        child: categoryController.categoryList != null ? ListView.builder(
           controller: scrollController,
           physics: const BouncingScrollPhysics(),
           shrinkWrap: true,
@@ -249,7 +248,7 @@ class PharmacyCategoryView extends StatelessWidget {
               ),
             );
           },
-        )) : PharmacyCategoryShimmer(categoryController: categoryController),
+        ) : PharmacyCategoryShimmer(categoryController: categoryController),
       ),
     ]);
   }
@@ -331,140 +330,78 @@ class FoodCategoryView extends StatelessWidget {
   }
 }
 
-/// Redesigned categories: two slowly auto-scrolling rows (second row runs in the
-/// opposite direction), themed tiles and a soft fade/slide-in. Tap targets are
-/// exactly the same routes as before.
-class AutoCategoryRows extends StatefulWidget {
+/// Static category grid copied from the reference video: 5 columns x 2 rows,
+/// the last tile becomes "+N See All" when there are more categories.
+/// Tap targets are exactly the same routes as before.
+class AutoCategoryRows extends StatelessWidget {
   final CategoryController categoryController;
   final bool circular;
   const AutoCategoryRows({super.key, required this.categoryController, required this.circular});
 
   @override
-  State<AutoCategoryRows> createState() => _AutoCategoryRowsState();
-}
-
-class _AutoCategoryRowsState extends State<AutoCategoryRows> {
-  final ScrollController _row1 = ScrollController();
-  final ScrollController _row2 = ScrollController();
-
-  @override
-  void dispose() {
-    _row1.dispose();
-    _row2.dispose();
-    super.dispose();
-  }
-
-  Widget _tile(BuildContext context, int index, int order) {
-    final category = widget.categoryController.categoryList![index];
+  Widget build(BuildContext context) {
+    final List list = categoryController.categoryList!;
+    final int total = list.length;
+    final bool hasMore = total > 10;
+    final int shown = hasMore ? 9 : total;
     final Color accent = BlinkitUi.accent();
-    final List<Color> tint = BlinkitUi.sectionTint();
-    final double box = widget.circular ? 62 : 68;
+    final int columns = ResponsiveHelper.isDesktop(context) ? 10 : ResponsiveHelper.isTab(context) ? 8 : 5;
 
-    return TweenAnimationBuilder<double>(
-      tween: Tween<double>(begin: 0, end: 1),
-      duration: Duration(milliseconds: 350 + (order > 8 ? 8 : order) * 60),
-      curve: Curves.easeOutCubic,
-      builder: (context, value, child) => Opacity(
-        opacity: value,
-        child: Transform.translate(offset: Offset(0, (1 - value) * 12), child: child),
+    return GridView.builder(
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: Dimensions.paddingSizeExtraSmall),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: columns,
+        crossAxisSpacing: 6,
+        mainAxisSpacing: 8,
+        childAspectRatio: 0.66,
       ),
-      child: InkWell(
-        onTap: () => Get.toNamed(RouteHelper.getCategoryItemRoute(category.id, category.name!)),
-        borderRadius: BorderRadius.circular(16),
-        child: SizedBox(
-          width: 82,
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Container(
-              height: box, width: box,
-              decoration: BoxDecoration(
-                shape: widget.circular ? BoxShape.circle : BoxShape.rectangle,
-                borderRadius: widget.circular ? null : BorderRadius.circular(18),
-                gradient: widget.circular ? null : LinearGradient(colors: [tint[0], Colors.white], begin: Alignment.topLeft, end: Alignment.bottomRight),
-                color: widget.circular ? Colors.white : null,
-                border: Border.all(color: accent.withValues(alpha: 0.9), width: widget.circular ? 2 : 1.2),
-                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 8, offset: const Offset(0, 3))],
-              ),
-              padding: widget.circular ? EdgeInsets.zero : const EdgeInsets.all(6),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(widget.circular ? 100 : 12),
-                child: CustomImage(
-                  image: '${category.imageFullUrl}',
-                  height: box, width: box, fit: widget.circular ? BoxFit.cover : BoxFit.contain,
+      itemCount: shown + (hasMore ? 1 : 0),
+      itemBuilder: (context, index) {
+        final bool isSeeAll = hasMore && index == shown;
+        final category = isSeeAll ? null : list[index];
+        return InkWell(
+          onTap: () {
+            if (isSeeAll) {
+              Get.toNamed(RouteHelper.getCategoryRoute());
+            } else {
+              Get.toNamed(RouteHelper.getCategoryItemRoute(category.id, category.name!));
+            }
+          },
+          borderRadius: BorderRadius.circular(14),
+          child: Column(children: [
+            AspectRatio(
+              aspectRatio: 1,
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: circular ? BoxShape.circle : BoxShape.rectangle,
+                  borderRadius: circular ? null : BorderRadius.circular(12),
+                  color: isSeeAll ? accent.withValues(alpha: 0.35) : Colors.white,
+                  border: (circular || isSeeAll) ? Border.all(color: accent, width: 1.5) : null,
+                  boxShadow: circular ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 6, offset: const Offset(0, 2))] : null,
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(circular ? 100 : 12),
+                  child: isSeeAll ? Center(
+                    child: Text('+${total - shown}', style: robotoBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: BlinkitUi.ink)),
+                  ) : CustomImage(
+                    image: '${category.imageFullUrl}',
+                    fit: circular ? BoxFit.cover : BoxFit.contain,
+                  ),
                 ),
               ),
             ),
             const SizedBox(height: 4),
             Text(
-              category.name ?? '',
-              style: robotoMedium.copyWith(fontSize: 11, color: BlinkitUi.ink),
+              isSeeAll ? 'see_all'.tr : (category.name ?? ''),
+              style: (isSeeAll ? robotoBold : robotoMedium).copyWith(fontSize: 11, color: isSeeAll ? accent == BlinkitUi.yellow ? BlinkitUi.ink : accent : BlinkitUi.ink),
               maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center,
             ),
           ]),
-        ),
-      ),
+        );
+      },
     );
-  }
-
-  Widget _seeAllTile(BuildContext context) {
-    final Color accent = BlinkitUi.accent();
-    return InkWell(
-      onTap: () => Get.toNamed(RouteHelper.getCategoryRoute()),
-      borderRadius: BorderRadius.circular(16),
-      child: SizedBox(
-        width: 82,
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Container(
-            height: widget.circular ? 62 : 68, width: widget.circular ? 62 : 68,
-            decoration: BoxDecoration(
-              shape: widget.circular ? BoxShape.circle : BoxShape.rectangle,
-              borderRadius: widget.circular ? null : BorderRadius.circular(18),
-              color: accent.withValues(alpha: 0.35),
-              border: Border.all(color: accent, width: 1.2),
-            ),
-            child: const Icon(Icons.arrow_forward_rounded, color: BlinkitUi.ink, size: 26),
-          ),
-          const SizedBox(height: 4),
-          Text('see_all'.tr, style: robotoBold.copyWith(fontSize: 11, color: BlinkitUi.ink), maxLines: 1),
-        ]),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final int total = widget.categoryController.categoryList!.length;
-    final List<int> first = [];
-    final List<int> second = [];
-    for (int i = 0; i < total; i++) {
-      (i.isEven ? first : second).add(i);
-    }
-    final double rowHeight = widget.circular ? 104 : 110;
-
-    Widget buildRow(List<int> ids, ScrollController controller, {bool reverse = false, bool withSeeAll = false}) {
-      return SizedBox(
-        height: rowHeight,
-        child: AutoScroller(
-          controller: controller,
-          reverse: reverse,
-          child: ListView.builder(
-            controller: controller,
-            scrollDirection: Axis.horizontal,
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
-            itemCount: ids.length + (withSeeAll ? 1 : 0),
-            itemBuilder: (context, i) {
-              if (withSeeAll && i == ids.length) return _seeAllTile(context);
-              return _tile(context, ids[i], i);
-            },
-          ),
-        ),
-      );
-    }
-
-    return Column(children: [
-      buildRow(first, _row1),
-      if (second.isNotEmpty) buildRow(second, _row2, reverse: true, withSeeAll: total > 8),
-    ]);
   }
 }
 

@@ -1,3 +1,5 @@
+import 'package:sixam_mart/features/home/widgets/views/campaign_tiles_view.dart';
+import 'package:sixam_mart/features/home/widgets/views/bestsellers_view.dart';
 import 'package:sixam_mart/util/blinkit_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -30,7 +32,9 @@ class GroceryHomeScreen extends StatelessWidget {
     bool isLoggedIn = AuthHelper.isLoggedIn();
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
 
-      Container(
+      ClipPath(
+        clipper: _WaveBottomClipper(),
+        child: Container(
         width: MediaQuery.of(context).size.width,
         decoration: Get.find<ThemeController>().darkTheme ? null : BoxDecoration(
           gradient: LinearGradient(
@@ -47,11 +51,16 @@ class GroceryHomeScreen extends StatelessWidget {
           children: [
             SizedBox(height: 6),
             BannerView(isFeatured: false),
-            SizedBox(height: 10),
+            SizedBox(height: 22),
           ],
         ),
       ),
+      ),
 
+      const SizedBox(height: 4),
+      const BestsellersView(),
+      const CampaignTilesView(),
+      _wrapInGradientCard(context, const SpecialOfferView(isFood: false, isShop: false), BlinkitUi.sectionTint()),
       SizedBox(height: MediaQuery.of(context).size.height * 0.02),
       const CategoryView(),
       SizedBox(height: MediaQuery.of(context).size.height * 0.02),
@@ -59,7 +68,6 @@ class GroceryHomeScreen extends StatelessWidget {
       SizedBox(height: MediaQuery.of(context).size.height * 0.02),
       const RecommendedStoreView(),
       SizedBox(height: MediaQuery.of(context).size.height * 0.02),
-      _wrapInGradientCard(context, const SpecialOfferView(isFood: false, isShop: false), BlinkitUi.sectionTint()),
       SizedBox(height: MediaQuery.of(context).size.height * 0.02),
       const HighlightWidget(),
       SizedBox(height: MediaQuery.of(context).size.height * 0.02),
@@ -101,4 +109,25 @@ class GroceryHomeScreen extends StatelessWidget {
       child: child,
     );
   }
+}
+
+
+/// Scalloped bottom edge under the accent header (reference video).
+class _WaveBottomClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    const double w = 26;
+    final Path path = Path()..lineTo(0, size.height - 12);
+    double x = 0;
+    while (x < size.width) {
+      path.quadraticBezierTo(x + w / 2, size.height + 12, x + w, size.height - 12);
+      x += w;
+    }
+    path.lineTo(size.width, 0);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
 }

@@ -1,3 +1,6 @@
+import 'package:sixam_mart/features/home/widgets/views/middle_section_banner_view.dart';
+import 'package:sixam_mart/features/home/widgets/views/campaign_tiles_view.dart';
+import 'package:sixam_mart/features/home/widgets/views/bestsellers_view.dart';
 import 'package:sixam_mart/util/blinkit_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -39,6 +42,10 @@ class FoodHomeScreen extends StatelessWidget {
           child: const BannerView(isFeatured: false),
         ),
       ),
+
+      const CampaignTilesView(),
+      const BestsellersView(),
+      const MiddleSectionBannerView(),
 
       /// Section: Category
       const Padding(
